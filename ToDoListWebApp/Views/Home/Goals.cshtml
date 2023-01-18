@@ -1,0 +1,201 @@
+﻿@model ToDoListWebApp.ViewModels.GoalViewModel
+@{
+    ViewData["Title"] = "Goals";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6">
+    <a href="@Url.Action("AddGoal","Home")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;">add new goal</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+@{
+    int genRandomNumber(){
+        Random r = new Random();
+        return r.Next(26);
+    }
+}
+@for (var i = 0; i <= Model.Goals.Where(p => p.GoalStatus == 0).Count()/3; i++)
+{
+    <div class="row">
+        @foreach (var goal in Model.Goals.Where(p => p.GoalStatus == 0).OrderByDescending(p => p.EstimateTime).Skip(i * 3).Take(3))
+        {
+            <div class="col-xl-4">
+                <div class="card shadow mb-4 d-flex">
+                    <!-- Card Header - Accordion -->
+                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[genRandomNumber()];">
+                        <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
+                        <p style="justify-content:right;display:contents;">Estimate : @goal.EstimateTime hour(s)
+                            @switch (goal.DurationType)
+                            {
+                                case 1:
+                                <i>daily</i>
+                                    break;
+                                case 2:
+                                    <i>weekly</i>
+                                    break;
+                                case 3:
+                                    <i>monthly</i>
+                                    break;
+                            }
+                        </p>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show">
+                        <div class="card-body">
+                            @foreach (var task in Model.Tasks.Where(p => p.GoalId == goal.NidGoal).OrderBy(p => p.TaskStatus).OrderBy(p => p.Title).Take(7))
+                            {
+                                <div class="row">
+                                    <div class="col-lg-9">
+                                    <div class="form-group">
+                                        <div class="custom-control custom-checkbox small">
+                                            @if(task.TaskStatus)
+                                            {
+                                                <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" checked disabled>
+                                            }else
+                                            {
+                                                <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" disabled>
+                                            }
+                                            <label class="custom-control-label" for="'@task.NidTask'">
+                                                @task.Title
+                                            </label>
+                                            <p style="justify-content:center;">Estimate Time : @task.EstimateTime hour(s)</p>
+                                        </div>
+                                    </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p style="justify-content:right;">@Model.Progresses.Where(p => p.TaskId == task.NidTask).Sum(q => q.ProgressTime) hour(s)<i class="fas fa-sm fa-check-square"></i></p>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Tasks.Where(p => p.GoalId == goal.NidGoal).Count() > 0)
+                            {
+                                <hr>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                    <p style="justify-content:left;">Estimate Time sum :  @Model.Tasks.Where(p => p.GoalId == goal.NidGoal).Sum(p => p.EstimateTime) hour(s)</p>
+                                    </div>
+                                    <div class="col-lg-6">
+                                    <p style="justify-content:right;">Progress Time sum :  @Model.Progresses.Where(p => p.GoalId == goal.NidGoal).Sum(p => p.ProgressTime) hour(s)</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<hr />
+<div style="text-align:center;"><h2>closed</h2></div>
+<hr />
+@for (var i = 0; i <= Model.Goals.Where(p => p.GoalStatus == 1).Count() / 3; i++)
+{
+    <div class="row">
+        @foreach (var goal in Model.Goals.Where(p => p.GoalStatus == 1).OrderByDescending(p => p.EstimateTime).Skip(i * 3).Take(3))
+        {
+            <div class="col-xl-4">
+                <div class="card shadow mb-4 d-flex" style="opacity:60%;">
+                    <!-- Card Header - Accordion -->
+                    <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[genRandomNumber()];">
+                        <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
+                        <p style="justify-content:right;display:contents;">
+                            Estimate : @goal.EstimateTime hour(s)
+                            @switch (goal.DurationType)
+                            {
+                                case 1:
+                                    <i>daily</i>
+                                    break;
+                                case 2:
+                                    <i>weekly</i>
+                                    break;
+                                case 3:
+                                    <i>monthly</i>
+                                    break;
+                            }
+                        </p>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show">
+                        <div class="card-body">
+                            @foreach (var task in Model.Tasks.Where(p => p.GoalId == goal.NidGoal).OrderBy(p => p.TaskStatus).OrderBy(p => p.Title).Take(7))
+                            {
+                                <div class="row">
+                                    <div class="col-lg-9">
+                                        <div class="form-group">
+                                            <div class="custom-control custom-checkbox small">
+                                                @if (task.TaskStatus)
+                                                {
+                                                    <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" checked disabled>
+                                                }
+                                                else
+                                                {
+                                                    <input type="checkbox" class="custom-control-input" id="'@task.NidTask'" disabled>
+                                                }
+                                                <label class="custom-control-label" for="'@task.NidTask'">
+                                                    @task.Title
+                                                </label>
+                                                <p style="justify-content:center;">Estimate Time : @task.EstimateTime hour(s)</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <p style="justify-content:right;">@Model.Progresses.Where(p => p.TaskId == task.NidTask).Sum(q => q.ProgressTime) hour(s)<i class="fas fa-sm fa-check-square"></i></p>
+                                    </div>
+                                </div>
+                            }
+                            @if (Model.Tasks.Where(p => p.GoalId == goal.NidGoal).Count() > 0)
+                            {
+                                <hr>
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <p style="justify-content:left;">Estimate Time sum :  @Model.Tasks.Where(p => p.GoalId == goal.NidGoal).Sum(p => p.EstimateTime) hour(s)</p>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <p style="justify-content:right;">Progress Time sum :  @Model.Progresses.Where(p => p.GoalId == goal.NidGoal).Sum(p => p.ProgressTime) hour(s)</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            if ('@TempData["GoalSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["GoalSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["GoalError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["GoalError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+    </script>
+}

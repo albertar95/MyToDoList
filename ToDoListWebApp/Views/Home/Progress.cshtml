@@ -1,0 +1,134 @@
+﻿@model ToDoListWebApp.ViewModels.GoalViewModel
+
+@{
+    ViewData["Title"] = "Progress";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card o-hidden border-0 shadow-lg my-5">
+    <div class="card-body">
+        <div class="text-center">
+            <h1 class="h4 text-gray-900 mb-4">Progresses</h1>
+        </div>
+        <div class="row" style="padding:25px;">
+            <div class="col-lg-6">
+                <a href="@Url.Action("AddProgress","Home")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;">add new progress</a>
+            </div>
+            <div class="col-lg-6">
+                <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;" role="alert" id="successDiv" hidden>
+                    <p id="successMessage"></p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;" role="alert" id="errorDiv" hidden>
+                    <p id="errorMessage"></p>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                    <thead style="text-align:center;">
+                        <tr>
+                            <th>Create Date</th>
+                            <th>Type</th>
+                            <th>Goal</th>
+                            <th>Task</th>
+                            <th>Progress Time</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tfoot style="text-align:center;">
+                        <tr>
+                            <th>Create Date</th>
+                            <th>Type</th>
+                            <th>Goal</th>
+                            <th>Task</th>
+                            <th>Progress Time</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        @foreach (var psr in Model.Progresses.OrderByDescending(p => p.CreateDate))
+                        {
+                            <tr style="text-align:center;">
+                                <td>@psr.CreateDate.ToString("yyyy/MM/dd")</td>
+                                @if (Model.Goals.FirstOrDefault(p => p.NidGoal == psr.GoalId).GoalType == 0)
+                                {
+                                    <td style="overflow:hidden;max-width:200px;">Goal</td>
+                                }else
+                                {
+                                    <td style="overflow:hidden;max-width:200px;">Chore</td>
+                                }
+                                <td style="overflow:hidden;max-width:200px;">@Model.Goals.FirstOrDefault(p => p.NidGoal == psr.GoalId).Title</td>
+                                <td style="overflow:hidden;max-width:200px;">@Model.Tasks.FirstOrDefault(p => p.NidTask == psr.TaskId).Title</td>
+                                <td>@psr.ProgressTime hour(s)</td>
+                                <td style="overflow:hidden;max-width:200px;">@psr.Description</td>
+                                <td>
+                                    <a href="@Url.Action("EditProgress","Home",new {NidProgress = psr.NidProgress})" class="btn btn-outline-warning">edit</a>
+                                    <a href="#" onclick="DeleteProgress('@psr.NidProgress')" class="btn btn-outline-danger">delete</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">are you sure you want to delete this progress?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="txtmodalBody"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="#" id="btnMDelete">delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            $('#dataTable1').DataTable({
+                order: [[0, 'desc']],
+            });
+            if ('@TempData["ProgressSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["ProgressSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["ProgressError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["ProgressError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function DeleteProgress(nidprogress) {
+            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteProgress","Home")' + '?NidProgress=' + nidprogress);
+            $("#deleteModal").modal();
+        }
+    </script>
+}

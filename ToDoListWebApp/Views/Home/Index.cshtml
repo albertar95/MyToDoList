@@ -1,0 +1,303 @@
+﻿@model ToDoListWebApp.ViewModels.IndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="PageWrapper">
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a href="#" onclick="ChangeDate(@Model.DatePeriodInfo[1])"><i class="fa fa-sm fa-arrow-left"></i>&nbsp; Previous Week</a>
+        <h1 class="h3 text-gray-800" style="margin:0 auto;">@Model.DatePeriodInfo[0] 
+            @*&nbsp; <i style="font-size:medium;">( @Model.Progresses.Sum(p => p.ProgressTime) hour(s) )</i>*@
+            </h1>
+        <a href="#" onclick="ChangeDate(@Model.DatePeriodInfo[2])">Next Week &nbsp;<i class="fa fa-sm fa-arrow-right"></i></a>
+    </div>
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-primary text-uppercase mb-1">
+                                Saturday
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Saturday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Saturday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Saturday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-code fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
+                                Sunday
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Sunday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Sunday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Sunday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-praying-hands fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-dark shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
+                                Monday
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Monday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Monday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Monday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-heart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
+                                TUESDAY
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Tuesday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Tuesday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Tuesday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-dangertext-uppercase mb-1">
+                                WEDNESDAY
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Wednesday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Wednesday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Wednesday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-running fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
+                                Thursday
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Thursday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Thursday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Thursday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-umbrella-beach fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-secondary text-uppercase mb-1">
+                                Friday
+                            </div>
+                            @foreach (var prg in Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Friday))
+                            {
+                                <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == prg.TaskId).Title     -    @prg.ProgressTime hour(s)</div>
+                            }
+                            @if (Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Friday).Count() > 0)
+                            {
+                                <hr />
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">Progress Time Sum : @Model.Progresses.Where(p => p.CreateDate.DayOfWeek == DayOfWeek.Friday).Sum(q => q.ProgressTime) hour(s)</div>
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bed fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 text-gray-800" style="margin:0 auto;">Tasks</h1>
+    </div>
+    <div class="row" style="padding:25px;">
+        @{
+            int sumWeekEst = 0;
+            int sumWeekProg = 0;
+        }
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                <thead style="text-align:center;">
+                    <tr>
+                        <th>Goal</th>
+                        <th>Task</th>
+                        @*<th>Estimate Time</th>*@
+                        <th>Week Estimate Time</th>
+                        @*<th>Progress Time</th>*@
+                        <th>Week Progress Time</th>
+                        @*<th>Remain Time</th>*@
+                        <th>Week Remain Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var tsk in Model.Tasks.OrderBy(p => p.Title))
+                    {
+                        int weekEst = ToDoListWebApp.Helpers.Calc.WeekEstimateCalc(tsk.EstimateTime, Model.Goals.FirstOrDefault(p => p.NidGoal == tsk.GoalId).EstimateTime, Model.Tasks.Where(p => p.GoalId == tsk.GoalId).Sum(q => q.EstimateTime));
+                        sumWeekEst += weekEst;
+                        double percentage = Convert.ToDouble(Model.Progresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime)) / Convert.ToDouble(weekEst);
+                        int weekProg = Model.Progresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime);
+                        sumWeekProg += weekProg;
+                        if (percentage >= 0.75)
+                        {
+                            <tr style="text-align:center;background-color:palegreen;">
+                                <td>@Model.Goals.FirstOrDefault(p => p.NidGoal == tsk.GoalId).Title</td>
+                                <td>@tsk.Title</td>
+                                @*<td>@tsk.EstimateTime hour(s)</td>*@
+                                <td>@weekEst hour(s)</td>
+                                @*<td>@Model.AllProgresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime) hour(s)</td>*@
+                                <td>@weekProg hour(s)</td>
+                                @*<td>@string.Format("{0}",tsk.EstimateTime - Model.AllProgresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime)) hour(s)</td>*@
+                                <td>@string.Format("{0}",weekEst - weekProg) hour(s)</td>
+                            </tr>
+                        }
+                        else if ((percentage >= 0.5) && (percentage < 0.75))
+                        {
+                            <tr style="text-align:center;background-color:palegoldenrod;">
+                                <td>@Model.Goals.FirstOrDefault(p => p.NidGoal == tsk.GoalId).Title</td>
+                                <td>@tsk.Title</td>
+                                @*<td>@tsk.EstimateTime hour(s)</td>*@
+                                <td>@weekEst hour(s)</td>
+                                @*<td>@Model.AllProgresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime) hour(s)</td>*@
+                                <td>@weekProg hour(s)</td>
+                                @*<td>@string.Format("{0}",tsk.EstimateTime - Model.AllProgresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime)) hour(s)</td>*@
+                                <td>@string.Format("{0}",weekEst - weekProg) hour(s)</td>
+                            </tr>
+                        }
+                        else if (percentage < 0.5)
+                        {
+                            <tr style="text-align:center;background-color:lightpink;">
+                                <td>@Model.Goals.FirstOrDefault(p => p.NidGoal == tsk.GoalId).Title</td>
+                                <td>@tsk.Title</td>
+                                @*<td>@tsk.EstimateTime hour(s)</td>*@
+                                <td>@weekEst hour(s)</td>
+                                @*<td>@Model.AllProgresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime) hour(s)</td>*@
+                                <td>@weekProg hour(s)</td>
+                                @*<td>@string.Format("{0}",tsk.EstimateTime - Model.AllProgresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime)) hour(s)</td>*@
+                                <td>@string.Format("{0}",weekEst - weekProg) hour(s)</td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+                <tfoot style="text-align:center;">
+                    <tr>
+                        <th>Goal</th>
+                        <th>Task</th>
+                        @*<th>@Model.Tasks.Sum(p => p.EstimateTime) hour(s)</th>*@
+                        <th>@sumWeekEst hour(s)</th>
+                        @*<th>@Model.AllProgresses.Sum(p => p.ProgressTime) hour(s)</th>*@
+                        <th>@sumWeekProg hour(s)</th>
+                        @*<th>@string.Format("{0}",Model.Tasks.Sum(p => p.EstimateTime) - Model.AllProgresses.Sum(p => p.ProgressTime)) hour(s)</th>*@
+                        <th>@string.Format("{0}",sumWeekEst - sumWeekProg) hour(s)</th>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        function ChangeDate(direction) {
+            var innerHtml = "";
+            $.ajax(
+                {
+                    url: '@Url.Action("IndexPagination","Home")' + '?Direction=' + direction,
+                    type: 'post',
+                    datatype: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (result) {
+                        innerHtml = result.html;
+                        $("#PageWrapper").html(innerHtml);
+                    },
+                    error: function () {
+                        alert('something went wrong!Try again')
+                    }
+                });
+        }
+    </script>
+}
