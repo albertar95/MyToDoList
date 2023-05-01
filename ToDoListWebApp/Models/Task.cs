@@ -7,14 +7,14 @@ namespace ToDoListWebApp.Models
     {
         public Task()
         {
-            Progresses = new HashSet<Progress>();
+            Schedules = new HashSet<Schedule>();
         }
 
         public Guid NidTask { get; set; }
         public Guid GoalId { get; set; }
         public string Title { get; set; } = null!;
         public bool TaskStatus { get; set; }
-        public short EstimateTime { get; set; }
+        public byte TaskWeight { get; set; }
         public string? Description { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime LastModifiedDate { get; set; }
@@ -23,6 +23,6 @@ namespace ToDoListWebApp.Models
 
         public virtual Goal Goal { get; set; } = null!;
         public virtual User User { get; set; } = null!;
-        public virtual ICollection<Progress> Progresses { get; set; }
+        public virtual ICollection<Schedule> Schedules { get; set; }
     }
 }

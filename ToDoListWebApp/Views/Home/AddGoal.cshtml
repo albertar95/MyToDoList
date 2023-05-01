@@ -43,36 +43,18 @@
             <div class="col-md-12 d-flex">
             <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="EstimateTime" class="control-label"></label>
-                        <input asp-for="EstimateTime" class="form-control" placeholder="hour(s)" />
-                        <span asp-validation-for="EstimateTime" class="text-danger"></span>
+                        <label asp-for="FromDate" class="control-label"></label>
+                        <input asp-for="FromDate" class="form-control" type="date" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" />
+                        <span asp-validation-for="FromDate" class="text-danger"></span>
                     </div>
             </div>
             <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="DurationType" class="control-label"></label>
-                         <select asp-for="DurationType" class="form-control">
-                            <option value="1">Daily</option>
-                            <option value="2" selected>Weekly</option>
-                                <option value="3">Monthly</option>
-                        </select>
-                        <span asp-validation-for="DurationType" class="text-danger"></span>
+                        <label asp-for="ToDate" class="control-label"></label>
+                        <input asp-for="ToDate" class="form-control" type="date" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" />
+                        <span asp-validation-for="ToDate" class="text-danger"></span>
                     </div>
             </div>
-            </div>
-            <div class="col-md-12 d-flex">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="GoalType" class="control-label"></label>
-                        <select asp-for="GoalType" class="form-control">
-                            <option value="0" selected>Goal</option>
-                            <option value="1">Chore</option>
-                        </select>
-                        <span asp-validation-for="GoalType" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                </div>
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>

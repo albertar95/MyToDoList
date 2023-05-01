@@ -10,18 +10,7 @@
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary">@Model.Goal.Title</h6>
         <div class="dropdown no-arrow d-flex">
-            @switch (Model.Goal.DurationType)
-            {
-                case 1:
-                    <p style="padding-right:10px;">Estimate Time : @Model.Goal.EstimateTime hour(s) Daily</p>
-                    break;
-                case 2:
-                    <p style="padding-right:10px;">Estimate Time : @Model.Goal.EstimateTime hour(s) Weekly</p>
-                    break;
-                case 3:
-                <p style="padding-right:10px;">Estimate Time : @Model.Goal.EstimateTime hour(s) Monthly</p>
-                    break;
-            }
+            <p style="padding-right:10px;">status : @Model.Tasks.Where(p => p.TaskStatus == true).Sum(q => q.TaskWeight) / 100%</p>
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
@@ -59,7 +48,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-lg-8">
+            <div class="col-lg-12">
                 <div class="d-flex mb-1">
                     <a href="#" class="btn btn-block btn-outline-success" style="width:fit-content;justify-content:right;" id="btnNewTask">new Task</a>
                     <h2 class="text-center" style="margin:0 auto;">Tasks</h2>
@@ -70,8 +59,7 @@
                             <tr>
                                 <th>Action</th>
                                 <th>Title</th>
-                                <th>Estimate Time</th>
-                                <th>Progress Time</th>
+                                <th>Task Weight</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -82,43 +70,21 @@
                                         <a href="#" onclick="DeleteTask('@tsk.NidTask','@tsk.Title')" class="btn btn-outline-danger">Delete</a>
                                         <a href="#" onclick="DoneTask('@tsk.NidTask','@tsk.Title')" class="btn btn-outline-primary">Done</a>
                                     </td>
-                                    <td><textarea id="txtFTaskTitle" onfocusout="UpdateTask('@tsk.NidTask',this.value,'@tsk.EstimateTime')">@tsk.Title</textarea><a href="#" style="padding:5px;" onclick="ShowDesc('@Html.Raw(tsk.Description)','@tsk.NidTask')">Desc</a></td>
-                                    <td><input type="number" onfocusout="UpdateTask('@tsk.NidTask','@tsk.Title',this.value)" id="txtFTaskEstimate" style="width:75px;text-align:center;" value="@tsk.EstimateTime" /> hour(s)</td>
-                                    <td>@Model.Progresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime) hour(s)</td>
+                                    <td><textarea id="txtFTaskTitle" onfocusout="UpdateTask('@tsk.NidTask',this.value,'@tsk.TaskWeight')">@tsk.Title</textarea><a href="#" style="padding:5px;" onclick="ShowDesc('@Html.Raw(tsk.Description)','@tsk.NidTask')">Desc</a></td>
+                                    <td><input type="number" onfocusout="UpdateTask('@tsk.NidTask','@tsk.Title',this.value)" id="txtFTaskEstimate" style="width:75px;text-align:center;" value="@tsk.TaskWeight" /> %</td>
                                 </tr>
                             }
                         </tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="d-flex mb-1">
-                    <a href="#" class="btn btn-block btn-outline-success" style="width:fit-content;justify-content:right;" id="btnNewProgress">new Progress</a>
-                    <h2 class="text-center" style="margin:0 auto;">Progresses</h2>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-bordered" id="TblProgresses" width="100%" cellspacing="0">
-                        <thead style="text-align:center;">
-                            <tr>
-                                <th>Action</th>
-                                <th>Title</th>
-                                <th>Create Date</th>
-                                <th>Progress Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var prg in Model.Progresses.OrderByDescending(p => p.CreateDate).Take(7))
-                            {
-                                <tr style="text-align:center;">
-                                    <td>
-                                        <a href="#" onclick="DeleteProgress('@prg.NidProgress')" class="btn btn-outline-danger">Delete</a>
-                                    </td>
-                                    <td>@Model.Tasks.Where(p => p.NidTask == prg.TaskId).FirstOrDefault().Title</td>
-                                    <td>@prg.CreateDate.ToShortDateString()</td>
-                                    <td>@prg.ProgressTime hour(s)</td>
+                        @if(Model.Tasks.Where(q => q.TaskStatus == false).Count() > 0)
+                        {
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align:center;">sum : @Model.Tasks.Where(p => p.TaskStatus == false).Sum(q => q.TaskWeight) %</th>
                                 </tr>
-                            }
-                        </tbody>
+                            </tfoot>
+                        }
                     </table>
                 </div>
             </div>
@@ -133,8 +99,7 @@
                             <tr>
                                 <th>Action</th>
                                 <th>Title</th>
-                                <th>Estimate Time</th>
-                                <th>Progress Time</th>
+                                <th>Task Weight</th>
                                 <th>Closure Date</th>
                             </tr>
                         </thead>
@@ -147,12 +112,22 @@
                                         <a href="#" onclick="UndoTask('@tsk.NidTask','@tsk.Title')" class="btn btn-outline-primary">Undo</a>
                                     </td>
                                     <td>@tsk.Title</td>
-                                    <td>@tsk.EstimateTime hour(s)</td>
-                                    <td>@Model.Progresses.Where(p => p.TaskId == tsk.NidTask).Sum(q => q.ProgressTime) hour(s)</td>
+                                    <td>@tsk.TaskWeight %</td>
                                     <td>@tsk.ClosureDate.Value.ToShortDateString()</td>
                                 </tr>
                             }
                         </tbody>
+                        @if(Model.Tasks.Where(q => q.TaskStatus == true).Count() > 0)
+                        {
+                            <tfoot>
+                                <tr>
+                                    <th></th>
+                                    <th></th>
+                                    <th style="text-align:center;">sum : @Model.Tasks.Where(p => p.TaskStatus == true).Sum(q => q.TaskWeight) %</th>
+                                    <th></th>
+                                </tr>
+                            </tfoot>
+                        }
                     </table>
                 </div>
             </div>
@@ -175,7 +150,7 @@
                         <input id="txtTaskTitle" type="text" class="form-control" placeholder="Title" autofocus />
                     </div>
                     <div class="form-group">
-                        <input id="txtTaskEstimate" type="text" class="form-control" placeholder="Estimate Time" />
+                        <input id="txtTaskWeight" type="number" min="0" max="100" value="0" class="form-control" onfocusout="CheckWeight(this.value)" />
                     </div>
                     <div class="form-group">
                         <textarea id="txtTaskDescription" placeholder="Description" class="form-control" rows="5"></textarea>
@@ -185,34 +160,6 @@
                             <div class="col-lg-4"></div>
                             <div class="col-lg-4 text-center">
                                 <a href="#" class="btn btn-primary" id="btnSubmitAddTask">create</a>
-                            </div>
-                            <div class="col-lg-4"></div>
-                        </div>
-                    </div>
-                </div>
-                <div id="AddProgressSection" hidden>
-                    <div class="form-group">
-                        <select class="form-control" id="sltProgressTaskId">
-                            @foreach (var Mtsk in Model.Tasks.Where(p => p.TaskStatus == false).OrderBy(p => p.Title))
-                            {
-                                <option value="'@Mtsk.NidTask'">@Mtsk.Title</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <input id="txtProgressCreateDate" type="date" class="form-control" placeholder="Create Date" />
-                    </div>
-                    <div class="form-group">
-                        <input id="txtProgressTime" type="text" class="form-control" placeholder="Progress Time" />
-                    </div>
-                    <div class="form-group">
-                        <textarea id="txtProgressDescription" placeholder="Description" class="form-control" rows="5"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-lg-4"></div>
-                            <div class="col-lg-4 text-center">
-                                <a href="#" class="btn btn-primary" id="btnSubmitAddProgress">create</a>
                             </div>
                             <div class="col-lg-4"></div>
                         </div>
@@ -260,23 +207,10 @@
                         </div>
                     </div>
                 </div>
-                <div id="DeleteProgressSection" hidden>
-                    <div class="form-group">
-                        <p id="txtDeleteProgress"></p>
-                    </div>
-                    <div class="form-group">
-                        <div class="row">
-                            <div class="col-lg-4"></div>
-                            <div class="col-lg-4 text-center">
-                                <a href="#" class="btn btn-danger" id="btnSubmitDeleteProgress">delete</a>
-                            </div>
-                            <div class="col-lg-4"></div>
-                        </div>
-                    </div>
-                </div>
                 <div id="DeleteGoalSection" hidden>
                     <div class="form-group">
-                        <p id="txtDeleteProgress">are you sure? delete goal : @Model.Goal.Title</p>
+                        <p style="color:maroon;">danger : with this action all information about this goal such as tasks will be remove from db.</p>
+                        <p id="txtDeletegoal">are you sure? delete goal : @Model.Goal.Title</p>
                     </div>
                     <div class="form-group">
                         <div class="row">
@@ -290,7 +224,7 @@
                 </div>
                 <div id="CloseGoalSection" hidden>
                     <div class="form-group">
-                        <p id="txtDeleteProgress">are you sure? close goal : @Model.Goal.Title</p>
+                        <p id="txtcloseGoal">are you sure? close goal : @Model.Goal.Title</p>
                     </div>
                     <div class="form-group">
                         <div class="row">
@@ -327,6 +261,10 @@
     {
     <script type="text/javascript">
         $(function () {
+            $(".modal").on('shown.bs.modal',function()
+            {
+                $(this).find('[autofocus]').focus();
+            });
             if ('@TempData["GoalPageSuccess"]' != "") {
                 $("#successDiv").removeAttr('hidden');
                 $("#successMessage").text('@TempData["GoalPageSuccess"]');
@@ -344,24 +282,9 @@
             $("#btnNewTask").click(function () {
                 $("#goalModalLabel").text('Add Task');
                 $("#AddTaskSection").removeAttr('hidden');
-                $("#AddProgressSection").attr('hidden', 'hidden');
                 $("#DeleteTaskSection").attr('hidden', 'hidden');
                 $("#DoneTaskSection").attr('hidden', 'hidden');
                 $("#UndoTaskSection").attr('hidden', 'hidden');
-                $("#DeleteProgressSection").attr('hidden', 'hidden');
-                $("#DeleteGoalSection").attr('hidden', 'hidden');
-                $("#TaskDescSection").attr('hidden', 'hidden');
-                $("#CloseGoalSection").attr('hidden', 'hidden');
-                $("#goalModal").modal();
-            });
-            $("#btnNewProgress").click(function () {
-                $("#goalModalLabel").text('Add Progress');
-                $("#AddProgressSection").removeAttr('hidden');
-                $("#AddTaskSection").attr('hidden', 'hidden');
-                $("#DeleteTaskSection").attr('hidden', 'hidden');
-                $("#DoneTaskSection").attr('hidden', 'hidden');
-                $("#UndoTaskSection").attr('hidden', 'hidden');
-                $("#DeleteProgressSection").attr('hidden', 'hidden');
                 $("#DeleteGoalSection").attr('hidden', 'hidden');
                 $("#TaskDescSection").attr('hidden', 'hidden');
                 $("#CloseGoalSection").attr('hidden', 'hidden');
@@ -375,7 +298,7 @@
                         url: '@Url.Action("SubmitAddTask","Home")',
                         type: 'post',
                         datatype: 'json',
-                        data: { NidGoal: '@Model.Goal.NidGoal', Title: $("#txtTaskTitle").val(), Estimate: $("#txtTaskEstimate").val(), Description: $("#txtTaskDescription").val() },
+                        data: { NidGoal: '@Model.Goal.NidGoal', Title: $("#txtTaskTitle").val(), TWeight : $("#txtTaskWeight").val(), Description: $("#txtTaskDescription").val() },
                         success: function (result) {
                             window.location.reload();
                         },
@@ -384,32 +307,14 @@
                         }
                     });
             });
-            $("#btnSubmitAddProgress").click(function (e) {
-                e.preventDefault();
-                $.ajax(
-                    {
-                        url: '@Url.Action("SubmitAddProgressFromGoal","Home")',
-                        type: 'post',
-                        datatype: 'json',
-                        data: { NidGoal: '@Model.Goal.NidGoal', NidTask: $("#sltProgressTaskId").find(':selected').val(), ProgressTime: $("#txtProgressTime").val(), CreateDate: $("#txtProgressCreateDate").val(), Description: $("#txtProgressDescription").val() },
-                        success: function (result) {
-                            window.location.reload();
-                        },
-                        error: function () {
-                            alert("error occured while creating progress!")
-                        }
-                    });
-            });
             $("#btnDeleteGoal").click(function(e)
             {
                 e.preventDefault();
                 $("#DeleteGoalSection").removeAttr('hidden');
                 $("#AddTaskSection").attr('hidden', 'hidden');
-                $("#AddProgressSection").attr('hidden', 'hidden');
                 $("#DoneTaskSection").attr('hidden', 'hidden');
                 $("#UndoTaskSection").attr('hidden', 'hidden');
                 $("#DeleteTaskSection").attr('hidden', 'hidden');
-                $("#DeleteProgressSection").attr('hidden', 'hidden');
                 $("#TaskDescSection").attr('hidden', 'hidden');
                 $("#CloseGoalSection").attr('hidden', 'hidden');
                 $("#goalModal").modal();
@@ -419,11 +324,9 @@
                 e.preventDefault();
                 $("#CloseGoalSection").removeAttr('hidden');
                 $("#AddTaskSection").attr('hidden', 'hidden');
-                $("#AddProgressSection").attr('hidden', 'hidden');
                 $("#DoneTaskSection").attr('hidden', 'hidden');
                 $("#UndoTaskSection").attr('hidden', 'hidden');
                 $("#DeleteTaskSection").attr('hidden', 'hidden');
-                $("#DeleteProgressSection").attr('hidden', 'hidden');
                 $("#TaskDescSection").attr('hidden', 'hidden');
                 $("#DeleteGoalSection").attr('hidden', 'hidden');
                 $("#goalModal").modal();
@@ -435,10 +338,8 @@
             $("#btnSubmitDeleteTask").attr('href', '@Url.Action("DeleteTask","Home")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
             $("#DeleteTaskSection").removeAttr('hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
-            $("#AddProgressSection").attr('hidden', 'hidden');
             $("#DoneTaskSection").attr('hidden', 'hidden');
             $("#UndoTaskSection").attr('hidden', 'hidden');
-            $("#DeleteProgressSection").attr('hidden', 'hidden');
             $("#DeleteGoalSection").attr('hidden', 'hidden');
             $("#TaskDescSection").attr('hidden', 'hidden');
             $("#CloseGoalSection").attr('hidden', 'hidden');
@@ -450,10 +351,8 @@
             $("#btnSubmitDoneTask").attr('href', '@Url.Action("DoneTask","Home")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
             $("#DoneTaskSection").removeAttr('hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
-            $("#AddProgressSection").attr('hidden', 'hidden');
             $("#DeleteTaskSection").attr('hidden', 'hidden');
             $("#UndoTaskSection").attr('hidden', 'hidden');
-            $("#DeleteProgressSection").attr('hidden', 'hidden');
             $("#DeleteGoalSection").attr('hidden', 'hidden');
             $("#TaskDescSection").attr('hidden', 'hidden');
             $("#CloseGoalSection").attr('hidden', 'hidden');
@@ -465,23 +364,7 @@
             $("#btnSubmitUndoTask").attr('href', '@Url.Action("UndoTask","Home")' + '?NidTask=' + nidtask + '&NidGoal=' + '@Model.Goal.NidGoal');
             $("#UndoTaskSection").removeAttr('hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
-            $("#AddProgressSection").attr('hidden', 'hidden');
             $("#DeleteTaskSection").attr('hidden', 'hidden');
-            $("#DoneTaskSection").attr('hidden', 'hidden');
-            $("#DeleteProgressSection").attr('hidden', 'hidden');
-            $("#DeleteGoalSection").attr('hidden', 'hidden');
-            $("#TaskDescSection").attr('hidden', 'hidden');
-            $("#CloseGoalSection").attr('hidden', 'hidden');
-            $("#goalModal").modal();
-        }
-        function DeleteProgress(nidprogress) {
-            $("#goalModalLabel").text('Delete Progress');
-            $("#txtDeleteProgress").text('are you sure? ');
-            $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("DeleteProgress","Home")' + '?NidProgress=' + nidprogress + '&NidGoal=' + '@Model.Goal.NidGoal');
-            $("#DeleteProgressSection").removeAttr('hidden');
-            $("#DeleteTaskSection").attr('hidden', 'hidden');
-            $("#AddProgressSection").attr('hidden', 'hidden');
-            $("#AddTaskSection").attr('hidden', 'hidden');
             $("#DoneTaskSection").attr('hidden', 'hidden');
             $("#DeleteGoalSection").attr('hidden', 'hidden');
             $("#TaskDescSection").attr('hidden', 'hidden');
@@ -511,7 +394,7 @@
                     url: '@Url.Action("SubmitEditTask","Home")',
                     type: 'post',
                     datatype: 'json',
-                    data: { NidGoal: '@Model.Goal.NidGoal', NidTask: nidtask, Title: title, Estimate: estimate },
+                    data: { NidGoal: '@Model.Goal.NidGoal', NidTask: nidtask, Title: title, TWeight: estimate },
                     success: function (result) {
                         //window.location.reload();
                     },
@@ -526,11 +409,9 @@
             $("#TaskDescArea").text(desc);
             $("#btnUpdateTaskDesc").attr('onclick', "UpdateTaskDescription('" + nidtask +"')");
             $("#TaskDescSection").removeAttr('hidden');
-            $("#AddProgressSection").attr('hidden', 'hidden');
             $("#DeleteTaskSection").attr('hidden', 'hidden');
             $("#DoneTaskSection").attr('hidden', 'hidden');
             $("#UndoTaskSection").attr('hidden', 'hidden');
-            $("#DeleteProgressSection").attr('hidden', 'hidden');
             $("#DeleteGoalSection").attr('hidden', 'hidden');
             $("#AddTaskSection").attr('hidden', 'hidden');
             $("#CloseGoalSection").attr('hidden', 'hidden');
@@ -550,6 +431,13 @@
                         alert("error occured while editing task!")
                     }
                 });
+        }
+        function CheckWeight(val)
+        {
+            if(val > 100)
+                $("#txtTaskWeight").val(100);
+            if (val < 0)
+                $("#txtTaskWeight").val(0);
         }
     </script>
 }

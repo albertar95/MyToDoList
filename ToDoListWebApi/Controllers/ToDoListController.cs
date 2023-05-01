@@ -96,19 +96,19 @@ namespace ToDoListWebApi.Controllers
         //goal apis
 
         [HttpGet, Route("GetGoalsByUserId/{NidUser}")]
-        public async Task<IActionResult> Goals([FromRoute] Guid NidUser, [FromQuery] Int16 GoalStatus = 0, [FromQuery] Int16 GoalType = 0) 
+        public async Task<IActionResult> Goals([FromRoute] Guid NidUser) 
         {
             using (ToDoListDbContext db = new ToDoListDbContext())
             {
-                return Ok(await db.Goals.Where(p => p.UserId == NidUser && p.GoalStatus >= GoalStatus && p.GoalType == GoalType).ToListAsync());
+                return Ok(await db.Goals.Where(p => p.UserId == NidUser).ToListAsync());
             }
         }
         [HttpGet, Route("GetGoalById/{NidGoal}")]
-        public async Task<IActionResult> GetGoal([FromRoute] Guid NidGoal, [FromQuery] Int16 GoalStatus = 0)
+        public async Task<IActionResult> GetGoal([FromRoute] Guid NidGoal)
         {
             using (ToDoListDbContext db = new ToDoListDbContext())
             {
-                return Ok(await db.Goals.Where(p => p.NidGoal == NidGoal && p.GoalStatus >= GoalStatus).FirstOrDefaultAsync());
+                return Ok(await db.Goals.Where(p => p.NidGoal == NidGoal).FirstOrDefaultAsync());
             }
         }
         [HttpPost, Route("AddGoal")]
@@ -243,6 +243,75 @@ namespace ToDoListWebApi.Controllers
             }
         }
 
+        //schedules apis
+        [HttpGet, Route("GetScheduleById/{NidSchedule}")]
+        public async Task<IActionResult> ScheduleById([FromRoute] Guid NidSchedule)
+        {
+            using (ToDoListDbContext db = new ToDoListDbContext())
+            {
+                return Ok(await db.Schedules.Where(p => p.NidSchedule == NidSchedule).FirstOrDefaultAsync());
+            }
+        }
+        [HttpGet, Route("GetScheduleByTaskId/{NidTask}")]
+        public async Task<IActionResult> GetSchedules([FromRoute] Guid NidTask)
+        {
+            using (ToDoListDbContext db = new ToDoListDbContext())
+            {
+                return Ok(await db.Schedules.Where(p => p.TaskId == NidTask).ToListAsync());
+            }
+        }
+        [HttpPost, Route("AddSchedule")]
+        public async Task<IActionResult> AddSchedule([FromBody] Models.Schedule schedule)
+        {
+            using (ToDoListDbContext toDoListDbContext = new ToDoListDbContext())
+            {
+                toDoListDbContext.Schedules.Add(schedule);
+                await toDoListDbContext.SaveChangesAsync();
+                return Ok();
+            }
+        }
+        [HttpPatch, Route("EditSchedule")]
+        public async Task<IActionResult> EditSchedule([FromBody] Models.Schedule schedule)
+        {
+            using (var toDoListDbContext = new ToDoListDbContext())
+            {
+                try
+                {
+                    toDoListDbContext.Entry(schedule).State = EntityState.Modified;
+                    await toDoListDbContext.SaveChangesAsync();
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(ex.Message);
+                }
+            }
+        }
+        [HttpDelete, Route("DeleteSchedule/{NidSchedule}")]
+        public async Task<IActionResult> DeleteSchedule([FromRoute] Guid NidSchedule)
+        {
+            using (ToDoListDbContext toDoListDbContext = new ToDoListDbContext())
+            {
+                var schedule = toDoListDbContext.Schedules.Where(p => p.NidSchedule == NidSchedule).FirstOrDefault();
+                if (schedule == null)
+                {
+                    return BadRequest();
+                }
+                else
+                {
+                    try
+                    {
+                        toDoListDbContext.Entry(schedule).State = EntityState.Deleted;
+                        await toDoListDbContext.SaveChangesAsync();
+                        return Ok();
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex);
+                    }
+                }
+            }
+        }
         //progresses apis
 
         [HttpGet, Route("GetProgressesByUserId/{NidUser}")]
@@ -261,20 +330,12 @@ namespace ToDoListWebApi.Controllers
                 return Ok(await db.Progresses.Where(p => p.NidProgress == NidProgress).FirstOrDefaultAsync());
             }
         }
-        [HttpGet, Route("GetProgressesByGoalId/{NidGoal}")]
-        public async Task<IActionResult> GetProgressesByGoalId([FromRoute] Guid NidGoal)
+        [HttpGet, Route("GetProgressesByScheduleId/{NidSchedule}")]
+        public async Task<IActionResult> GetProgressesByScheduleId([FromRoute] Guid NidSchedule)
         {
             using (ToDoListDbContext db = new ToDoListDbContext())
             {
-                return Ok(await db.Progresses.Where(p => p.GoalId == NidGoal).ToListAsync());
-            }
-        }
-        [HttpGet, Route("GetProgressesByTaskId/{NidTask}")]
-        public async Task<IActionResult> GetProgressesByTaskId([FromRoute] Guid NidTask)
-        {
-            using (ToDoListDbContext db = new ToDoListDbContext())
-            {
-                return Ok(await db.Progresses.Where(p => p.TaskId == NidTask).ToListAsync());
+                return Ok(await db.Progresses.Where(p => p.ScheduleId == NidSchedule).ToListAsync());
             }
         }
         [HttpPost, Route("AddProgress")]

@@ -1,0 +1,12 @@
+﻿        //on configuring dbContext
+
+        IConfigurationRoot configuration = new ConfigurationBuilder()
+    .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+    .AddJsonFile("appsettings.json")
+    .Build();
+        optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
+
+        //scaffold-dbcontext
+
+        scaffold-dbcontext "Server=.;Database=ToDoListDb;User Id=sa;Password=safa@123;TrustServerCertificate=true;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force

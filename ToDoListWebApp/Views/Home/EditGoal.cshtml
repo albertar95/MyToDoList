@@ -13,8 +13,6 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="NidGoal" />
             <input type="hidden" asp-for="UserId" />
-            <input type="hidden" asp-for="Tasks" />
-            <input type="hidden" asp-for="Progresses" />
             <div class="form-group" hidden>
                 <label asp-for="GoalStatus" class="control-label"></label>
                 <input asp-for="GoalStatus" class="form-control" />
@@ -43,63 +41,17 @@
             <div class="col-md-12 d-flex">
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="EstimateTime" class="control-label"></label>
-                        <input asp-for="EstimateTime" class="form-control" placeholder="hour(s)" />
-                        <span asp-validation-for="EstimateTime" class="text-danger"></span>
+                        <label asp-for="FromDate" class="control-label"></label>
+                        <input asp-for="FromDate" class="form-control" />
+                        <span asp-validation-for="FromDate" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label asp-for="DurationType" class="control-label"></label>
-                        <select asp-for="DurationType" class="form-control">
-                            @if(Model.DurationType == 1)
-                            {
-                                <option value="1" selected>Daily</option>
-                            }else
-                            {
-                                <option value="1">Daily</option>
-                            }
-                            @if (Model.DurationType == 2)
-                            {
-                                <option value="2" selected>Weekly</option>
-                            }
-                            else
-                            {
-                                <option value="2">Weekly</option>
-                            }
-                            @if (Model.DurationType == 3)
-                            {
-                                <option value="3" selected>Monthly</option>
-                            }
-                            else
-                            {
-                                <option value="3">Monthly</option>
-                            }
-                        </select>
-                        <span asp-validation-for="DurationType" class="text-danger"></span>
+                        <label asp-for="ToDate" class="control-label"></label>
+                        <input asp-for="ToDate" class="form-control" />
+                        <span asp-validation-for="ToDate" class="text-danger"></span>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-12 d-flex">
-                <div class="col-md-6">
-                    <div class="form-group">
-                        <label asp-for="GoalType" class="control-label"></label>
-                        <select asp-for="GoalType" class="form-control">
-                            @if (Model.GoalType == 1)
-                            {
-                                <option value="1" selected>Chore</option>
-                                <option value="0">Goal</option>
-                            }
-                            @if (Model.GoalType == 0)
-                            {
-                                <option value="0" selected>Goal</option>
-                                <option value="1">Chore</option>
-                            }
-                        </select>
-                        <span asp-validation-for="GoalType" class="text-danger"></span>
-                    </div>
-                </div>
-                <div class="col-md-6">
                 </div>
             </div>
             <div class="form-group">

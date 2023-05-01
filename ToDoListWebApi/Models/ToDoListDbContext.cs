@@ -18,15 +18,17 @@ namespace ToDoListWebApi.Models
 
         public virtual DbSet<Goal> Goals { get; set; } = null!;
         public virtual DbSet<Progress> Progresses { get; set; } = null!;
+        public virtual DbSet<Schedule> Schedules { get; set; } = null!;
         public virtual DbSet<Task> Tasks { get; set; } = null!;
         public virtual DbSet<User> Users { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseSqlServer("CONNECTION_STRING");
-            }
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+        .AddJsonFile("appsettings.json")
+        .Build();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -39,7 +41,11 @@ namespace ToDoListWebApi.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
+                entity.Property(e => e.FromDate).HasColumnType("date");
+
                 entity.Property(e => e.LastModifiedDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ToDate).HasColumnType("date");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Goals)
@@ -56,23 +62,34 @@ namespace ToDoListWebApi.Models
 
                 entity.Property(e => e.CreateDate).HasColumnType("datetime");
 
-                entity.HasOne(d => d.Goal)
+                entity.HasOne(d => d.Schedule)
                     .WithMany(p => p.Progresses)
-                    .HasForeignKey(d => d.GoalId)
+                    .HasForeignKey(d => d.ScheduleId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Progresses_Goals");
-
-                entity.HasOne(d => d.Task)
-                    .WithMany(p => p.Progresses)
-                    .HasForeignKey(d => d.TaskId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Progresses_Tasks");
+                    .HasConstraintName("FK_Progresses_Schedules");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.Progresses)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Progresses_Users");
+            });
+
+            modelBuilder.Entity<Schedule>(entity =>
+            {
+                entity.HasKey(e => e.NidSchedule);
+
+                entity.Property(e => e.NidSchedule).ValueGeneratedNever();
+
+                entity.Property(e => e.CreateDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ScheduleDate).HasColumnType("date");
+
+                entity.HasOne(d => d.Task)
+                    .WithMany(p => p.Schedules)
+                    .HasForeignKey(d => d.TaskId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Schedules_Tasks");
             });
 
             modelBuilder.Entity<Task>(entity =>

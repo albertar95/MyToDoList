@@ -156,34 +156,18 @@ namespace ToDoListWebApp.Controllers
         }
 
         //goal section
-        public async Task<IActionResult> Goals(byte goalType = 0)
+        public async Task<IActionResult> Goals()
         {
             using (HttpClient client = new HttpClient())
             {
                 string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
                 List<Goal> goals = new List<Goal>();
-                List<Models.Progress> progresses = new List<Models.Progress>();
                 List<Models.Task> tasks = new List<Models.Task>();
-                switch (goalType)
+                var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
+                if (response.StatusCode == HttpStatusCode.OK)
                 {
-                    case 0:
-                        var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
-                        if (response.StatusCode == HttpStatusCode.OK)
-                        {
-                            var stringResponse = await response.Content.ReadAsStringAsync();
-                            goals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>();
-                        }
-                        break;
-                        case 1:
-                        var choreResponse = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}?GoalType=1");
-                        if (choreResponse.StatusCode == HttpStatusCode.OK)
-                        {
-                            var choreStringResponse = await choreResponse.Content.ReadAsStringAsync();
-                            goals = JsonConvert.DeserializeObject<List<Goal>>(choreStringResponse) ?? new List<Goal>();
-                        }
-                        break;
-                    default:
-                        break;
+                    var stringResponse = await response.Content.ReadAsStringAsync();
+                    goals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>();
                 }
                 foreach (var g in goals)
                 {
@@ -197,18 +181,8 @@ namespace ToDoListWebApp.Controllers
                             tasks.Add(t);
                         }
                     }
-                    var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByGoalId/{g.NidGoal}");
-                    if (ProgressResponse.StatusCode == HttpStatusCode.OK)
-                    {
-                        var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                        var tmpProgresses = JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>();
-                        foreach (var p in tmpProgresses)
-                        {
-                            progresses.Add(p);
-                        }
-                    }
                 }
-                return View(new ToDoListWebApp.ViewModels.GoalViewModel() {  Goals = goals, Tasks = tasks, Progresses = progresses});
+                return View(new ToDoListWebApp.ViewModels.GoalViewModel() {  Goals = goals, Tasks = tasks });
             }
         }
         public IActionResult AddGoal() 
@@ -232,10 +206,7 @@ namespace ToDoListWebApp.Controllers
                 else
                     TempData["GoalError"] = $"an error occured while creating goal!";
             }
-            if(goal.GoalType == 0)
             return RedirectToAction("Goals");
-            else
-                return RedirectToAction("Goals",new {goalType = 1});
         }
         public async Task<IActionResult> Goal(Guid NidGoal) 
         {
@@ -265,10 +236,10 @@ namespace ToDoListWebApp.Controllers
                 return View(new ToDoListWebApp.ViewModels.GoalPageViewModel() { Goal = goal, Tasks = tasks, Progresses = progresses });
             }
         }
-        public async Task<IActionResult> SubmitAddTask(string NidGoal,string Title,string Estimate,string Description = "")
+        public async Task<IActionResult> SubmitAddTask(string NidGoal,string Title,string TWeight, string Description = "")
         {
             string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-            Models.Task newtask = new Models.Task() {  CreateDate = DateTime.Now, Description = Description, EstimateTime = Int16.Parse(Estimate), GoalId = Guid.Parse(NidGoal), LastModifiedDate = DateTime.Now, NidTask = Guid.NewGuid(), TaskStatus = false, Title = Title, UserId = Guid.Parse(NidUser)};
+            Models.Task newtask = new Models.Task() {  CreateDate = DateTime.Now, Description = Description, GoalId = Guid.Parse(NidGoal), LastModifiedDate = DateTime.Now, NidTask = Guid.NewGuid(), TaskStatus = false, Title = Title, UserId = Guid.Parse(NidUser), TaskWeight = byte.Parse(TWeight) };
             StringContent stringContent = new StringContent(JsonConvert.SerializeObject(newtask), Encoding.UTF8, "application/json");
             using (HttpClient client = new HttpClient())
             {
@@ -280,43 +251,10 @@ namespace ToDoListWebApp.Controllers
             }
             return RedirectToAction("Goal",new { NidGoal = NidGoal});
         }
-        public async Task<IActionResult> SubmitAddProgressFromGoal(string NidGoal, string NidTask, string ProgressTime, string CreateDate,string Description)
-        {
-            string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-            Models.Progress newProgress = new Models.Progress();
-            newProgress.CreateDate = DateTime.Parse(CreateDate);
-            newProgress.Description = Description;
-            newProgress.GoalId = Guid.Parse(NidGoal);
-            newProgress.NidProgress = Guid.NewGuid();
-            newProgress.ProgressTime = Int16.Parse(ProgressTime);
-            newProgress.TaskId = Guid.Parse(NidTask.Replace("'",""));
-            newProgress.UserId = Guid.Parse(NidUser);
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(newProgress), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddProgress", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["GoalPageSuccess"] = $"progress created successfully";
-                else
-                    TempData["GoalPageError"] = $"an error occured while creating progress!";
-            }
-            return RedirectToAction("Goal", new { NidGoal = NidGoal });
-        }
         public async Task<IActionResult> DeleteTask(Guid NidTask,Guid NidGoal)
         {
             using (HttpClient client = new HttpClient())
             {
-                List<Models.Progress> progresses = new List<Models.Progress>();
-                var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByTaskId/{NidTask}");
-                if (ProgressResponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                    progresses = JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>();
-                }
-                foreach (var prg in progresses)
-                {
-                    await client.DeleteAsync($"{BaseAddress}/DeleteProgress/{prg.NidProgress}");
-                }
                 var response = await client.DeleteAsync($"{BaseAddress}/DeleteTask/{NidTask}");
                 if (response.IsSuccessStatusCode)
                     TempData["GoalPageSuccess"] = $"task deleted successfully";
@@ -381,7 +319,7 @@ namespace ToDoListWebApp.Controllers
             }
             return RedirectToAction("Goal", new { NidGoal = NidGoal });
         }
-        public async Task<IActionResult> SubmitEditTask(string NidTask, Guid NidGoal,string Title,string Estimate)
+        public async Task<IActionResult> SubmitEditTask(string NidTask, Guid NidGoal,string Title,string TWeight)
         {
             using (HttpClient client = new HttpClient())
             {
@@ -392,7 +330,7 @@ namespace ToDoListWebApp.Controllers
                     Models.Task task = JsonConvert.DeserializeObject<Models.Task>(stringResponse) ?? new Models.Task();
                     task.Title = Title;
                     task.LastModifiedDate = DateTime.Now;
-                    task.EstimateTime = Int16.Parse(Estimate);
+                    task.TaskWeight = byte.Parse(TWeight);
                     StringContent stringContent = new StringContent(JsonConvert.SerializeObject(task), Encoding.UTF8, "application/json");
                     var putTaskResponse = await client.PatchAsync($"{BaseAddress}/EditTask", stringContent);
                     if (putTaskResponse.IsSuccessStatusCode)
@@ -472,10 +410,7 @@ namespace ToDoListWebApp.Controllers
                         TempData["GoalError"] = $"an error occured while editing goal!";
                 }
             }
-            if (goal.GoalType == 0)
-                return RedirectToAction("Goals");
-            else
-                return RedirectToAction("Goals", new { goalType = 1 });
+            return RedirectToAction("Goals");
         }
         public async Task<IActionResult> SubmitDeleteGoal(Guid NidGoal)
         {
@@ -488,38 +423,13 @@ namespace ToDoListWebApp.Controllers
                     var stringResponse = await Goalresponse.Content.ReadAsStringAsync();
                     goal = JsonConvert.DeserializeObject<Goal>(stringResponse) ?? new Goal();
                 }
-                    List<Models.Progress> progresses = new List<Models.Progress>();
-                List<Models.Task> tasks = new List<Models.Task>();
-                var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByGoalId/{NidGoal}");
-                if (ProgressResponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                    progresses = JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>();
-                }
-                foreach (var prg in progresses)
-                {
-                    await client.DeleteAsync($"{BaseAddress}/DeleteProgress/{prg.NidProgress}");
-                }
-                var TaskResponse = await client.GetAsync($"{BaseAddress}/GetTasksByGoalId/{NidGoal}");
-                if (TaskResponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse2 = await TaskResponse.Content.ReadAsStringAsync();
-                    tasks = JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2) ?? new List<Models.Task>();
-                }
-                foreach (var tsk in tasks)
-                {
-                    await client.DeleteAsync($"{BaseAddress}/DeleteTask/{tsk.NidTask}");
-                }
                 var response = await client.DeleteAsync($"{BaseAddress}/DeleteGoal/{NidGoal}");
                 if (response.IsSuccessStatusCode)
                     TempData["GoalSuccess"] = $"goal deleted successfully";
                 else
                     TempData["GoalError"] = $"an error occured while deleting goal!";
             }
-            if (goal.GoalType == 0)
-                return RedirectToAction("Goals");
-            else
-                return RedirectToAction("Goals", new { goalType = 1 });
+            return RedirectToAction("Goals");
         }
         public async Task<IActionResult> OpenGoal(Guid NidGoal)
         {
@@ -541,177 +451,8 @@ namespace ToDoListWebApp.Controllers
                         TempData["GoalError"] = $"an error occured while editing goal!";
                 }
             }
-            if (goal.GoalType == 0)
-                return RedirectToAction("Goals");
-            else
-                return RedirectToAction("Goals", new { goalType = 1 });
+            return RedirectToAction("Goals");
         }
-        //progress section
-        public async Task<IActionResult> Progress()
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Goal> goals = new List<Goal>();
-                List<Models.Progress> progresses = new List<Models.Progress>();
-                List<Models.Task> tasks = new List<Models.Task>();
-                var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    var tmpGoals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>();
-                    foreach (var g in tmpGoals)
-                    {
-                        goals.Add(g);
-                    }
-                }
-                var gresponse = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}?GoalStatus=1");
-                if (gresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var gstringResponse = await gresponse.Content.ReadAsStringAsync();
-                    var tmpGoals = JsonConvert.DeserializeObject<List<Goal>>(gstringResponse) ?? new List<Goal>();
-                    foreach (var g in tmpGoals)
-                    {
-                        goals.Add(g);
-                    }
-                }
-                var gresponse2 = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}?GoalType=1");
-                if (gresponse2.StatusCode == HttpStatusCode.OK)
-                {
-                    var gstringResponse2 = await gresponse2.Content.ReadAsStringAsync();
-                    var tmpGoals = JsonConvert.DeserializeObject<List<Goal>>(gstringResponse2) ?? new List<Goal>();
-                    foreach (var g in tmpGoals)
-                    {
-                        goals.Add(g);
-                    }
-                }
-                var gresponse3 = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}?GoalType=1&GoalStatus=1");
-                if (gresponse3.StatusCode == HttpStatusCode.OK)
-                {
-                    var gstringResponse3 = await gresponse3.Content.ReadAsStringAsync();
-                    var tmpGoals = JsonConvert.DeserializeObject<List<Goal>>(gstringResponse3) ?? new List<Goal>();
-                    foreach (var g in tmpGoals)
-                    {
-                        goals.Add(g);
-                    }
-                }
-                var response2 = await client.GetAsync($"{BaseAddress}/GetTasksByUserId/{NidUser}");
-                if (response2.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                    tasks = JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2) ?? new List<Models.Task>();
-                }
-                var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByUserId/{NidUser}");
-                if (ProgressResponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                    progresses = JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>();
-                }
-                return View(new ToDoListWebApp.ViewModels.GoalViewModel() { Goals = goals, Tasks = tasks, Progresses = progresses });
-            }
-        }
-        public async Task<IActionResult> AddProgress() 
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Goal> goals = new List<Goal>();
-                List<Models.Progress> progresses = new List<Models.Progress>();
-                List<Models.Task> tasks = new List<Models.Task>();
-                var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    goals.AddRange(JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>());
-                }
-                var choreresponse = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}?GoalType=1");
-                if (choreresponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse3 = await choreresponse.Content.ReadAsStringAsync();
-                    goals.AddRange(JsonConvert.DeserializeObject<List<Goal>>(stringResponse3) ?? new List<Goal>());
-                }
-                var response2 = await client.GetAsync($"{BaseAddress}/GetTasksByUserId/{NidUser}");
-                if (response2.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                    tasks = JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2) ?? new List<Models.Task>();
-                }
-                return View(new ToDoListWebApp.ViewModels.GoalViewModel() { Goals = goals, Tasks = tasks });
-            }
-        }
-        public async Task<IActionResult> EditProgress(Guid NidProgress)
-        {
-            using (HttpClient client = new HttpClient())
-            {
-                string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-                List<Goal> goals = new List<Goal>();
-                Models.Progress progress = new Models.Progress();
-                List<Models.Task> tasks = new List<Models.Task>();
-                var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
-                if (response.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse = await response.Content.ReadAsStringAsync();
-                    goals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>();
-                }
-                var response2 = await client.GetAsync($"{BaseAddress}/GetTasksByUserId/{NidUser}");
-                if (response2.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                    tasks = JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2) ?? new List<Models.Task>();
-                }
-                var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressById/{NidProgress}");
-                if (ProgressResponse.StatusCode == HttpStatusCode.OK)
-                {
-                    var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                    progress = JsonConvert.DeserializeObject<Models.Progress>(stringResponse3) ?? new Models.Progress();
-                }
-                return View(new ToDoListWebApp.ViewModels.GoalViewModel() { Goals = goals, Tasks = tasks, Progress = progress });
-            }
-        }
-        public async Task<IActionResult> SubmitAddProgress(Models.Progress progress) 
-        {
-            string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
-            progress.NidProgress = Guid.NewGuid();
-            progress.UserId = Guid.Parse(NidUser);
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(progress), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PostAsync($"{BaseAddress}/AddProgress", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["ProgressSuccess"] = $"progress created successfully";
-                else
-                    TempData["ProgressError"] = $"an error occured while creating progress!";
-            }
-            return RedirectToAction("Progress");
-        }
-        public async Task<IActionResult> SubmitEditProgress(Models.Progress progress) 
-        {
-            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(progress), Encoding.UTF8, "application/json");
-            using (HttpClient client = new HttpClient())
-            {
-                var response = await client.PatchAsync($"{BaseAddress}/EditProgress", stringContent);
-                if (response.IsSuccessStatusCode)
-                    TempData["ProgressSuccess"] = $"progress edited successfully";
-                else
-                    TempData["ProgressError"] = $"an error occured while editing progress!";
-            }
-            return RedirectToAction("Progress");
-        }
-        public async Task<IActionResult> SubmitDeleteProgress(string NidProgress)
-        {
-            using (HttpClient httpClient = new HttpClient())
-            {
-                var response = await httpClient.DeleteAsync($"{BaseAddress}/DeleteProgress/{NidProgress}");
-                if (response.IsSuccessStatusCode)
-                    TempData["ProgressSuccess"] = "progress deleted successfully";
-                else
-                    TempData["ProgressError"] = "an error occured while deleting progress!";
-                return RedirectToAction("Progress");
-            }
-        }
-
-        //chores section
-
         //generals
         public async Task<IActionResult> Index()
         {
@@ -724,15 +465,14 @@ namespace ToDoListWebApp.Controllers
             {
                 string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
                 List<Goal> goals = new List<Goal>();
-                List<Models.Progress> progress = new List<Models.Progress>();
                 List<Models.Task> tasks = new List<Models.Task>();
-                List<Models.Task> alltasks = new List<Models.Task>();
+                List<Models.Schedule> schedules = new List<Models.Schedule>();
+                List<Models.Progress> progress = new List<Models.Progress>();
                 var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var stringResponse = await response.Content.ReadAsStringAsync();
-                    var TmpGoals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>();
-                    goals = TmpGoals.Where(p => p.CreateDate <= weekDates.Item2).ToList();
+                    goals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse).Where(p => p.GoalStatus == 0).ToList() ?? new List<Goal>();
                 }
                 foreach (var goal in goals)
                 {
@@ -740,26 +480,29 @@ namespace ToDoListWebApp.Controllers
                     if (response2.StatusCode == HttpStatusCode.OK)
                     {
                         var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                        var tmpTask = JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2) ?? new List<Models.Task>();
-                        foreach (var task in tmpTask)
-                        {
-                            alltasks.Add(task);
-                            if (!task.TaskStatus && goal.GoalStatus == 0)
-                                tasks.Add(task);
-                        }
+                        tasks.AddRange(JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2).Where(p => p.TaskStatus == false).ToList() ?? new List<Models.Task>());
                     }
-                    var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByGoalId/{goal.NidGoal}");
+                }
+                foreach (var task in tasks)
+                {
+                    var response3 = await client.GetAsync($"{BaseAddress}/GetScheduleByTaskId/{task.NidTask}");
+                    if (response3.StatusCode == HttpStatusCode.OK)
+                    {
+                        var stringResponse3 = await response3.Content.ReadAsStringAsync();
+                        schedules.AddRange(JsonConvert.DeserializeObject<List<Models.Schedule>>(stringResponse3).Where(p => p.ScheduleDate >= weekDates.Item1 && p.ScheduleDate <= weekDates.Item2) ?? new List<Models.Schedule>());
+                    }
+                }
+                foreach (var schedule in schedules)
+                {
+                    var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByScheduleId/{schedule.NidSchedule}");
                     if (ProgressResponse.StatusCode == HttpStatusCode.OK)
                     {
                         var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                        var tmpProgress = JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>();
-                        foreach (var pr in tmpProgress)
-                        {
-                            progress.Add(pr);
-                        }
+                        progress.AddRange(JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>());
                     }
                 }
-                return View(new ViewModels.IndexViewModel() {  DatePeriodInfo = DatePeriod, Goals = goals, Progresses = progress.Where(p => p.CreateDate >= weekDates.Item1 && p.CreateDate <= weekDates.Item2), Tasks = tasks, AllProgresses = progress, AllTasks = alltasks });
+                return View(new ViewModels.IndexViewModel() 
+                {  DatePeriodInfo = DatePeriod, Goals = goals, Progresses = progress, Tasks = tasks, Schedules = schedules, StartDate = weekDates.Item1, EndDate = weekDates.Item2 });
             }
         }
         public async Task<IActionResult> IndexPagination(int Direction) 
@@ -773,15 +516,14 @@ namespace ToDoListWebApp.Controllers
             {
                 string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
                 List<Goal> goals = new List<Goal>();
-                List<Models.Progress> progress = new List<Models.Progress>();
                 List<Models.Task> tasks = new List<Models.Task>();
-                List<Models.Task> alltasks = new List<Models.Task>();
+                List<Models.Schedule> schedules = new List<Models.Schedule>();
+                List<Models.Progress> progress = new List<Models.Progress>();
                 var response = await client.GetAsync($"{BaseAddress}/GetGoalsByUserId/{NidUser}");
                 if (response.StatusCode == HttpStatusCode.OK)
                 {
                     var stringResponse = await response.Content.ReadAsStringAsync();
-                    var TmpGoals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse) ?? new List<Goal>();
-                    goals = TmpGoals.Where(p => p.CreateDate <= weekDates.Item2).ToList();
+                    goals = JsonConvert.DeserializeObject<List<Goal>>(stringResponse).Where(p => p.GoalStatus == 0).ToList() ?? new List<Goal>();
                 }
                 foreach (var goal in goals)
                 {
@@ -789,30 +531,80 @@ namespace ToDoListWebApp.Controllers
                     if (response2.StatusCode == HttpStatusCode.OK)
                     {
                         var stringResponse2 = await response2.Content.ReadAsStringAsync();
-                        var tmpTask = JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2) ?? new List<Models.Task>();
-                        foreach (var task in tmpTask)
-                        {
-                            alltasks.Add(task);
-                            if (!task.TaskStatus && goal.GoalStatus == 0)
-                                tasks.Add(task);
-                        }
+                        tasks.AddRange(JsonConvert.DeserializeObject<List<Models.Task>>(stringResponse2).Where(p => p.TaskStatus == false).ToList() ?? new List<Models.Task>());
                     }
-                    var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByGoalId/{goal.NidGoal}");
+                }
+                foreach (var task in tasks)
+                {
+                    var response3 = await client.GetAsync($"{BaseAddress}/GetScheduleByTaskId/{task.NidTask}");
+                    if (response3.StatusCode == HttpStatusCode.OK)
+                    {
+                        var stringResponse3 = await response3.Content.ReadAsStringAsync();
+                        schedules.AddRange(JsonConvert.DeserializeObject<List<Models.Schedule>>(stringResponse3).Where(p => p.ScheduleDate >= weekDates.Item1 && p.ScheduleDate <= weekDates.Item2) ?? new List<Models.Schedule>());
+                    }
+                }
+                foreach (var schedule in schedules)
+                {
+                    var ProgressResponse = await client.GetAsync($"{BaseAddress}/GetProgressesByScheduleId/{schedule.NidSchedule}");
                     if (ProgressResponse.StatusCode == HttpStatusCode.OK)
                     {
                         var stringResponse3 = await ProgressResponse.Content.ReadAsStringAsync();
-                        var tmpProgress = JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>();
-                        foreach (var pr in tmpProgress)
-                        {
-                            progress.Add(pr);
-                        }
+                        progress.AddRange(JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>());
                     }
                 }
-                return Json(new JsonResults() { HasValue = true, Html = await Helpers.RenderViewToString.RenderViewAsync(this, "_IndexPartialView", new ViewModels.IndexViewModel() { DatePeriodInfo = DatePeriod, Goals = goals, Progresses = progress.Where(p => p.CreateDate >= weekDates.Item1 && p.CreateDate <= weekDates.Item2), Tasks = tasks, AllProgresses = progress, AllTasks = alltasks }, true) });
+                return Json(new JsonResults() { HasValue = true, Html = await Helpers.RenderViewToString.RenderViewAsync(this, "_IndexPartialView", new ViewModels.IndexViewModel() { DatePeriodInfo = DatePeriod, Goals = goals, Progresses = progress, Tasks = tasks, Schedules = schedules, StartDate = weekDates.Item1, EndDate = weekDates.Item2 }, true) });
+
             }
         }
-
-
+        public async Task<IActionResult> SubmitAddSchedule(Models.Schedule schedule)
+        {
+            schedule.NidSchedule = Guid.NewGuid();
+            schedule.CreateDate = DateTime.Now;
+            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(schedule), Encoding.UTF8, "application/json");
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.PostAsync($"{BaseAddress}/AddSchedule", stringContent);
+            }
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> SubmitAddProgress(Models.Progress progress)
+        {
+            string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
+            progress.NidProgress = Guid.NewGuid();
+            progress.CreateDate = DateTime.Now;
+            progress.UserId = Guid.Parse(NidUser);
+            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(progress), Encoding.UTF8, "application/json");
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.PostAsync($"{BaseAddress}/AddProgress", stringContent);
+            }
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> SubmitEditProgress(Models.Progress progress)
+        {
+            StringContent stringContent = new StringContent(JsonConvert.SerializeObject(progress), Encoding.UTF8, "application/json");
+            using (HttpClient client = new HttpClient())
+            {
+                var response = await client.PatchAsync($"{BaseAddress}/EditProgress", stringContent);
+                return RedirectToAction("Index");
+            }
+        }
+        public async Task<IActionResult> SubmitDeleteProgress(string NidProgress)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var response = await httpClient.DeleteAsync($"{BaseAddress}/DeleteProgress/{NidProgress}");
+                return RedirectToAction("Index");
+            }
+        }
+        public async Task<IActionResult> SubmitDeleteSchedule(string NidSchedule)
+        {
+            using (HttpClient httpClient = new HttpClient())
+            {
+                var response = await httpClient.DeleteAsync($"{BaseAddress}/DeleteSchedule/{NidSchedule}");
+                return RedirectToAction("Index");
+            }
+        }
         public IActionResult Charts()
         {
             return View();
