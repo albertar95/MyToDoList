@@ -26,7 +26,8 @@ namespace ToDoListWebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private static string BaseAddress = "http://192.168.1.10:8061/api/todolist";
+        //private static string BaseAddress = "http://192.168.1.10:8061/api/todolist";//local service
+        private static string BaseAddress = "http://141.11.182.163:8061/api/todolist"; // host service
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -461,6 +462,7 @@ namespace ToDoListWebApp.Controllers
             DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
             DatePeriod[1] = "-1";
             DatePeriod[2] = "1";
+            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
             using (HttpClient client = new HttpClient())
             {
                 string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
@@ -502,7 +504,7 @@ namespace ToDoListWebApp.Controllers
                     }
                 }
                 return View(new ViewModels.IndexViewModel() 
-                {  DatePeriodInfo = DatePeriod, Goals = goals, Progresses = progress, Tasks = tasks, Schedules = schedules, StartDate = weekDates.Item1, EndDate = weekDates.Item2 });
+                {  DatePeriodInfo = DatePeriod, PersianDatePeriodInfo = new string[] { persianDates.Item1,persianDates.Item2 }, Goals = goals, Progresses = progress, Tasks = tasks, Schedules = schedules, StartDate = weekDates.Item1, EndDate = weekDates.Item2 });
             }
         }
         public async Task<IActionResult> IndexPagination(int Direction) 
@@ -512,6 +514,7 @@ namespace ToDoListWebApp.Controllers
             DatePeriod[0] = $"{weekDates.Item1.ToString("dd/MM/yyyy")} - {weekDates.Item2.ToString("dd/MM/yyyy")}";
             DatePeriod[1] = $"{Direction - 1}";
             DatePeriod[2] = $"{Direction + 1}";
+            var persianDates = Helpers.Dates.ToPersianDate(weekDates);
             using (HttpClient client = new HttpClient())
             {
                 string NidUser = User.Claims.Where(p => p.Type == "NidUser").FirstOrDefault().Value;
@@ -552,7 +555,7 @@ namespace ToDoListWebApp.Controllers
                         progress.AddRange(JsonConvert.DeserializeObject<List<Models.Progress>>(stringResponse3) ?? new List<Models.Progress>());
                     }
                 }
-                return Json(new JsonResults() { HasValue = true, Html = await Helpers.RenderViewToString.RenderViewAsync(this, "_IndexPartialView", new ViewModels.IndexViewModel() { DatePeriodInfo = DatePeriod, Goals = goals, Progresses = progress, Tasks = tasks, Schedules = schedules, StartDate = weekDates.Item1, EndDate = weekDates.Item2 }, true) });
+                return Json(new JsonResults() { HasValue = true, Html = await Helpers.RenderViewToString.RenderViewAsync(this, "_IndexPartialView", new ViewModels.IndexViewModel() { DatePeriodInfo = DatePeriod, PersianDatePeriodInfo = new string[] { persianDates.Item1, persianDates.Item2 }, Goals = goals, Progresses = progress, Tasks = tasks, Schedules = schedules, StartDate = weekDates.Item1, EndDate = weekDates.Item2 }, true) });
 
             }
         }

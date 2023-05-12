@@ -9,6 +9,7 @@ namespace ToDoListWebApp.ViewModels
         public IEnumerable<Models.Task> Tasks { get; set; } = null!;
         public IEnumerable<Goal> Goals { get; set; } = null!;
         public string[] DatePeriodInfo { get; set; } = null!;
+        public string[] PersianDatePeriodInfo { get; set; } = null!;
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
     }

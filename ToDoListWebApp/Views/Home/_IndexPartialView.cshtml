@@ -4,7 +4,7 @@
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <a href="#" onclick="ChangeDate(event,@Model.DatePeriodInfo[1])"><i class="fa fa-sm fa-arrow-left"></i>&nbsp; Previous Week</a>
     <h1 class="h3 text-gray-800" style="margin:0 auto;">
-        @Model.DatePeriodInfo[0]
+        @Model.PersianDatePeriodInfo[0] - @Model.PersianDatePeriodInfo[1]
     </h1>
     <a href="#" onclick="ChangeDate(event,@Model.DatePeriodInfo[2])">Next Week &nbsp;<i class="fa fa-sm fa-arrow-right"></i></a>
 </div>
@@ -277,17 +277,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var prog in Model.Progresses.OrderBy(p => p.CreateDate))
+                    @foreach (var sch in Model.Schedules.OrderBy(p => p.ScheduleDate))
                     {
-                        <tr style="text-align:center;">
-                            <td>@Model.Tasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title</td>
-                            <td>@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek</td>
-                            <td>@prog.ProgressTime</td>
-                            <td>
-                                <a href="#" onclick="DeleteModal(event,2,'@prog.NidProgress','@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek','@Model.Tasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
-                                <a href="#" onclick="EditProgress('@prog.NidProgress','@prog.ScheduleId','@prog.ProgressTime','@prog.CreateDate','@prog.Description','@prog.UserId')" class="btn btn-warning"><i class="fa fa-pen"></i></a>
-                            </td>
-                        </tr>
+                        @foreach (var prog in Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).OrderBy(p => p.CreateDate))
+                        {
+                            <tr style="text-align:center;">
+                                <td>@Model.Tasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title</td>
+                                <td>@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek</td>
+                                <td>@prog.ProgressTime</td>
+                                <td>
+                                    <a href="#" onclick="DeleteModal(event,2,'@prog.NidProgress','@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek','@Model.Tasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                    <a href="#" onclick="EditProgress('@prog.NidProgress','@prog.ScheduleId','@prog.ProgressTime','@prog.CreateDate','@prog.Description','@prog.UserId')" class="btn btn-warning"><i class="fa fa-pen"></i></a>
+                                </td>
+                            </tr>
+                        }
                     }
                 </tbody>
             </table>
@@ -308,11 +311,20 @@
                 <div id="AddScheduleSection" hidden>
                     <form asp-action="SubmitAddSchedule" enctype="multipart/form-data">
                         <div class="form-group">
-                            <select id="sltTasks" name="TaskId" class="form-control" required>
+                            <select id="GoalId" class="form-control" onchange="SetTasks(this)" required>
+                                <option disabled selected>select goal</option>
+                                @foreach (var tsk in Model.Goals.Where(p => p.FromDate <= Model.EndDate && p.ToDate >= Model.EndDate).OrderBy(p => p.FromDate).ThenBy(q => q.Title))
+                                {
+                                    <option value="@tsk.NidGoal">@tsk.Title</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select id="TaskId" name="TaskId" class="form-control" required>
                                 <option disabled selected>select task</option>
                                 @foreach (var tsk in Model.Tasks.OrderBy(p => p.GoalId).ThenBy(q => q.Title))
                                 {
-                                    <option value="@tsk.NidTask">@tsk.Title</option>
+                                    <option value="@tsk.NidTask" title="@tsk.GoalId" hidden>@tsk.Title</option>
                                 }
                             </select>
                         </div>
@@ -342,16 +354,28 @@
                 <div id="AddProgressSection" hidden>
                     <form asp-action="SubmitAddProgress" enctype="multipart/form-data">
                         <div class="form-group">
+                            <select id="sltScheduleDate2" onchange="SetSchedule(this)" class="form-control" required>
+                                <option>select schedule day</option>
+                                <option value="@Model.StartDate.Date">Saturday</option>
+                                <option value="@Model.StartDate.AddDays(1).Date">Sunday</option>
+                                <option value="@Model.StartDate.AddDays(2).Date">Monday</option>
+                                <option value="@Model.StartDate.AddDays(3).Date">Tuesday</option>
+                                <option value="@Model.StartDate.AddDays(4).Date">Wednesday</option>
+                                <option value="@Model.StartDate.AddDays(5).Date">Thursday</option>
+                                <option value="@Model.StartDate.AddDays(6).Date">Friday</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
                             <select id="ScheduleId" name="ScheduleId" class="form-control" required>
                                 <option disabled selected>select schedule</option>
                                 @foreach (var sch in Model.Schedules.OrderBy(p => p.ScheduleDate))
                                 {
-                                    <option value="@sch.NidSchedule">@sch.ScheduleDate.DayOfWeek - @Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</option>
+                                    <option value="@sch.NidSchedule" title="@sch.ScheduleDate" hidden>@Model.Goals.FirstOrDefault(p => p.NidGoal == Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).GoalId).Title - @Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</option>
                                 }
                             </select>
                         </div>
                         <div class="form-group">
-                            <input id="ProgressTime" name="ProgressTime" type="number" value="0" class="form-control" />
+                            <input id="ProgressTime" name="ProgressTime" type="number" value="0" min="1" required class="form-control" />
                         </div>
                         <div class="form-group">
                             <textarea id="Description" name="Description" placeholder="Description" class="form-control" rows="5"></textarea>
@@ -410,7 +434,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <input id="txtProgressTime" name="ProgressTime" type="number" value="0" class="form-control" />
+                            <input id="txtProgressTime" name="ProgressTime" type="number" value="0" min="1" required class="form-control" />
                         </div>
                         <div class="form-group">
                             <textarea id="txtProgressDescription" name="Description" placeholder="Description" class="form-control" rows="5"></textarea>

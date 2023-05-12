@@ -7,13 +7,22 @@ namespace ToDoListWebApi.Models
 {
     public partial class ToDoListDbContext : DbContext
     {
+        public string DbPath { get; }
         public ToDoListDbContext()
         {
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
         }
 
         public ToDoListDbContext(DbContextOptions<ToDoListDbContext> options)
             : base(options)
         {
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
         }
 
         public virtual DbSet<Goal> Goals { get; set; } = null!;
@@ -24,11 +33,16 @@ namespace ToDoListWebApi.Models
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
+            //sql database
+
             IConfigurationRoot configuration = new ConfigurationBuilder()
         .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
         .AddJsonFile("appsettings.json")
         .Build();
             optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
+            //sqlite database
+            //optionsBuilder.UseSqlite($"Data Source={DbPath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
