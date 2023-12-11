@@ -1,0 +1,61 @@
+﻿@model List<ToDoListWebApp.Models.NoteGroup>
+
+@{
+    ViewData["Title"] = "Note Groups";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 d-flex">
+        <a href="@Url.Action("AddNoteGroup","Home")" class="btn btn-block btn-outline-success" style="width:200px;justify-content:right;height:38px;overflow:hidden;">add new folder</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+@for (var i = 0; i <= Model.Count / 6; i++)
+{
+    <div class="row">
+        @foreach (var grp in Model.OrderByDescending(p => p.ModifiedDate).Skip(i * 6).Take(6))
+        {
+            <div class="col-xl-2 col-sm-2" style="padding:10px;">
+                <a href="@Url.Action("NoteGroup","Home",new {NidGroup = grp.NidGroup})" class="btn btn-block btn-outline-warning">
+                    <span class="fa fa-2x fa-folder">&nbsp;@grp.Title&nbsp;</span>
+                </a>
+            </div>
+        }
+    </div>
+}
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            if ('@TempData["GroupSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["GroupSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["GroupError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["GroupError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+    </script>
+}
+

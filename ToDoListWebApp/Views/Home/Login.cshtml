@@ -1,4 +1,4 @@
-﻿
+﻿@model string
 @{
     Layout = null;
 }
@@ -46,6 +46,11 @@
                                         <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                                     </div>
                                     <form class="user" asp-action="SubmitLogin" enctype="multipart/form-data">
+                                        @if (!string.IsNullOrWhiteSpace(Model))
+                                        {
+                                            <input type="text" class="form-control form-control-user"
+                                                   id="returnUrl" name="returnUrl" value="@Model" hidden>
+                                        }
                                         <div class="form-group">
                                             <input type="text" class="form-control form-control-user" required
                                                    id="Username" name="Username"

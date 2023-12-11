@@ -1,0 +1,142 @@
+﻿@model ToDoListWebApp.Models.Account
+@{
+    ViewData["Title"] = "Account";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="card o-hidden border-0 shadow-lg my-5">
+    <div class="card-body">
+        <div class="row">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="successDiv" hidden>
+                <p id="successMessage"></p>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="errorDiv" hidden>
+                <p id="errorMessage"></p>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <!-- Nested Row within Card Body -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="p-9">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">Account : @Model.Title </h1>
+                    </div>
+                    <form class="user" style="padding:25px;" asp-action="SubmitEditAccount" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="NidAccount" name="NidAccount"
+                                   value="@Model.NidAccount" hidden>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="UserId" name="UserId"
+                                   value="@Model.UserId" hidden>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="Title" name="Title"
+                                   value="@Model.Title" autofocus>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="CreateDate" name="CreateDate"
+                                   value="@Model.CreateDate" readonly>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="LastModified" name="LastModified"
+                                   value="@Model.LastModified" readonly>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="Amount" name="Amount"
+                                   value="@Model.Amount" readonly>
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-user" id="LendAmount" name="LendAmount"
+                                   value="@Model.LendAmount" readonly>
+                        </div>
+                        @if(Model.IsActive)
+                        {
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox small">
+                                    <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" value="true" onclick="$(this).attr('value', this.checked ? 'true' : 'false')" checked>
+                                    <label class="custom-control-label" for="IsActive">
+                                        Is Active
+                                    </label>
+                                </div>
+                            </div>
+                        }else
+                        {
+                            <div class="form-group">
+                                <div class="custom-control custom-checkbox small">
+                                    <input type="checkbox" class="custom-control-input" id="IsActive" name="IsActive" value="false" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
+                                    <label class="custom-control-label" for="IsActive">
+                                        Is Active
+                                    </label>
+                                </div>
+                            </div>                            
+                        }
+                        <button type="submit" class="btn btn-warning btn-user btn-block" style="width:50%;margin:0 auto;">
+                            edit account
+                        </button>
+                        <hr>
+                        <a href="#" onclick="DeleteAccount(event,'@Model.NidAccount')" class="btn btn-danger btn-user btn-block" style="width:50%;margin:0 auto;">delete</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">are you sure you want to delete this account?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="txtmodalBody"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="#" id="btnMDelete">delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            if ('@TempData["AccountSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["AccountSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["AccountError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["AccountError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function DeleteAccount(e, nid) {
+            e.preventDefault();
+            $("#txtmodalBody").text('@Model.Title');
+            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteAccount","Home")' + '?NidAccount=' + nid);
+            $("#deleteModal").modal();
+        }
+    </script>
+}
+

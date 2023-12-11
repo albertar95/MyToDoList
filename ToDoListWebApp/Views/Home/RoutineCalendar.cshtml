@@ -1,0 +1,449 @@
+﻿@model ToDoListWebApp.ViewModels.RoutineViewModel
+@{
+    ViewData["Title"] = "RoutineCalendar";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div id="PageWrapper">
+    <input id="CurrentDirection" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <a href="#" onclick="ChangeDate(event,@Model.DatePeriodInfo[1])"><i class="fa fa-sm fa-arrow-left"></i>&nbsp; Previous Week</a>
+        <h1 class="h3 text-gray-800" style="margin:0 auto;">
+            @Model.PersianDatePeriodInfo[0] - @Model.PersianDatePeriodInfo[1]
+        </h1>
+        <a href="#" onclick="ChangeDate(event,@Model.DatePeriodInfo[2])">Next Week &nbsp;<i class="fa fa-sm fa-arrow-right"></i></a>
+    </div>
+    <div class="row">
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-primary text-uppercase mb-1">
+                                Saturday
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("1") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.Date && p.Todate >= Model.StartDate.Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-code fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-success text-uppercase mb-1">
+                                Sunday
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("2") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(1).Date && p.Todate >= Model.StartDate.AddDays(1).Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate.AddDays(1).Date))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-praying-hands fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-dark shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-dark text-uppercase mb-1">
+                                Monday
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("3") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(2).Date && p.Todate >= Model.StartDate.AddDays(2).Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate.AddDays(2).Date))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-heart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-info text-uppercase mb-1">
+                                TUESDAY
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("4") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(3).Date && p.Todate >= Model.StartDate.AddDays(3).Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate.AddDays(3).Date))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-dangertext-uppercase mb-1">
+                                WEDNESDAY
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("5") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(4).Date && p.Todate >= Model.StartDate.AddDays(4).Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate.AddDays(4).Date))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-running fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-warning text-uppercase mb-1">
+                                Thursday
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("6") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(5).Date && p.Todate >= Model.StartDate.AddDays(5).Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate.AddDays(5).Date))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-umbrella-beach fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-4 col-md-6 mb-4">
+            <div class="card border-left-secondary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-sm-left font-weight-bold text-secondary text-uppercase mb-1">
+                                Friday
+                            </div>
+                            @foreach (var rot in Model.Routines.Where(p => (p.RepeatDays.Split(',').Contains("7") || p.RepeatDays.Split(',').Contains("0")) && p.FromDate <= Model.StartDate.AddDays(6).Date && p.Todate >= Model.StartDate.AddDays(6).Date))
+                            {
+                                @if (Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == Model.StartDate.AddDays(6).Date))
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title <i class="fa fa-sm fa-check-circle"></i></div>
+                                }
+                                else
+                                {
+                                    <div class="h6 mb-0 text-gray-800">@rot.Title</div>
+                                }
+                            }
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-bed fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" style="padding:25px;">
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <h3 style="text-align:center;">routine</h3>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="TblRoutines" width="100%" cellspacing="0">
+                    <thead style="text-align:center;">
+                        <tr>
+                            <th>Routine Type</th>
+                            <th>Title</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rtn in Model.Routines.Where(p => p.Todate >= Model.StartDate && p.FromDate <= Model.EndDate).OrderBy(p => p.RepeatType).OrderBy(p => p.CreateDate))
+                        {
+                            <tr style="text-align:center;">
+                                @if (rtn.RepeatType == 1)
+                                {
+                                    <td>Daily</td>
+                                }
+                                else if (rtn.RepeatType == 2)
+                                {
+                                    <td>Weekly</td>
+                                }
+                                <td>@rtn.Title</td>
+                                <td>
+                                    <a href="#" onclick="DeleteRoutine(event,'@rtn.NidRoutine','@rtn.Title')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
+                                    <a href="#" onclick="EditRoutine(event,'@rtn.NidRoutine','@rtn.Title','@string.Format("{0}-{1}-{2}",rtn.FromDate.Year,rtn.FromDate.Month.ToString().PadLeft(2,'0'),rtn.FromDate.Day.ToString().PadLeft(2,'0'))','@string.Format("{0}-{1}-{2}",rtn.Todate.Year,rtn.Todate.Month.ToString().PadLeft(2,'0'),rtn.Todate.Day.ToString().PadLeft(2,'0'))')" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-lg-6 col-md-6 col-sm-6">
+            <h3 style="text-align:center;">progress</h3>
+            <a href="#" onclick="AddModal(event)" class="btn btn-block btn-outline-success" style="width:40px;position:absolute;right:15px;top:-15px;"><i class="fa fa-plus"></i></a>
+            <div class="table-responsive">
+                <table class="table table-bordered" id="TblRoutineProgresses" width="100%" cellspacing="0">
+                    <thead style="text-align:center;">
+                        <tr>
+                            <th>Routine Name</th>
+                            <th>Progress Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var rtn in Model.RoutineProgresses.Where(p => p.ProgressDate >= Model.StartDate).OrderBy(p => p.ProgressDate))
+                        {
+                            <tr style="text-align:center;">
+                                <td>@Model.Routines.FirstOrDefault(p => p.NidRoutine == rtn.RoutineId).Title</td>
+                                <td>@ToDoListWebApp.Helpers.Dates.ToPersianDate2(rtn.ProgressDate)</td>
+                                <td>
+                                    <a href="#" onclick="DeleteProgress(event,'@rtn.NidRoutineProgress')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="routineModal1" tabindex="-1" role="dialog" aria-labelledby="routineModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="routineModalLabel"></h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="EditSection" hidden>
+                        <form asp-action="SubmitEditRoutine" enctype="multipart/form-data" method="post">
+                            <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
+                            <input type="text" id="NidRoutine" name="NidRoutine" hidden />
+                            <div class="form-group">
+                                <input type="text" id="Title" class="form-control" placeholder="Title" name="Title" autofocus />
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <input type="date" id="FromDate" class="form-control" name="FromDate" />
+                                    </div>
+                                    <div class="col-lg-6 text-center">
+                                        <input type="date" id="ToDate" class="form-control" name="ToDate" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-4"></div>
+                                    <div class="col-lg-4 text-center">
+                                        <button type="submit" class="btn btn-warning">edit</button>
+                                    </div>
+                                    <div class="col-lg-4"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="DeleteSection" hidden>
+                        <div class="form-group">
+                            <p id="txtDeleteRoutine"></p>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4 text-center">
+                                    <a href="#" class="btn btn-danger" id="btnSubmitDeleteRoutine">delete</a>
+                                </div>
+                                <div class="col-lg-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="DeleteProgressSection" hidden>
+                        <div class="form-group">
+                            <p id="txtDeleteProgress"></p>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4 text-center">
+                                    <a href="#" class="btn btn-danger" id="btnSubmitDeleteProgress">delete</a>
+                                </div>
+                                <div class="col-lg-4"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="AddProgressSection" hidden>
+                        <form asp-action="SubmitAddRoutineProgress" enctype="multipart/form-data">
+                            <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
+                            <div class="form-group">
+                                <select id="ScheduleId" name="RoutineId" class="form-control" required>
+                                    <option disabled selected>select Routine</option>
+                                    @foreach (var sch in Model.Routines.Where(p => p.Todate >= Model.StartDate && p.FromDate <= Model.EndDate).OrderBy(p => p.Title))
+                                    {
+                                        <option value="@sch.NidRoutine">@sch.Title</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <select id="sltProgressDate" name="ProgressDate" class="form-control" required>
+                                    <option>select schedule day</option>
+                                    <option value="@Model.StartDate.Date">Saturday</option>
+                                    <option value="@Model.StartDate.AddDays(1).Date">Sunday</option>
+                                    <option value="@Model.StartDate.AddDays(2).Date">Monday</option>
+                                    <option value="@Model.StartDate.AddDays(3).Date">Tuesday</option>
+                                    <option value="@Model.StartDate.AddDays(4).Date">Wednesday</option>
+                                    <option value="@Model.StartDate.AddDays(5).Date">Thursday</option>
+                                    <option value="@Model.StartDate.AddDays(6).Date">Friday</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <div class="row">
+                                    <div class="col-lg-4"></div>
+                                    <div class="col-lg-4 text-center">
+                                        <button type="submit" class="btn btn-primary" id="btnSubmitAddProgress">create</button>
+                                    </div>
+                                    <div class="col-lg-4"></div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script type="text/javascript">
+        function ChangeDate(e, direction) {
+            e.preventDefault();
+            var innerHtml = "";
+            $.ajax(
+                {
+                    url: '@Url.Action("IndexPagination2","Home")' + '?Direction=' + direction,
+                    type: 'post',
+                    datatype: 'json',
+                    contentType: 'application/json; charset=utf-8',
+                    success: function (result) {
+                        innerHtml = result.html;
+                        $("#PageWrapper").html(innerHtml);
+                    },
+                    error: function () {
+                        alert('something went wrong!Try again')
+                    }
+                });
+        }
+        function EditRoutine(e,nid,title,from,to)
+        {
+            e.preventDefault();
+            $("#NidRoutine").val(nid);
+            $("#Title").val(title);
+            $("#FromDate").val(from);
+            $("#ToDate").val(to);
+            $("#routineModalLabel").text('Edit Routine');
+            $("#EditSection").removeAttr('hidden');
+            $("#DeleteProgressSection").attr('hidden', 'hidden');
+            $("#AddProgressSection").attr('hidden', 'hidden');
+            $("#DeleteSection").attr('hidden', 'hidden');
+            $("#routineModal1").modal();
+        }
+        function DeleteRoutine(e, nid, title) {
+            e.preventDefault();
+            $("#routineModalLabel").text('delete Daily Routine');
+            $("#DeleteSection").removeAttr('hidden');
+            $("#EditSection").attr('hidden', 'hidden');
+            $("#DeleteProgressSection").attr('hidden', 'hidden');
+            $("#AddProgressSection").attr('hidden', 'hidden');
+            $("#txtDeleteRoutine").text('are you sure to delete daily routine ' + title + ' ?');
+            $("#btnSubmitDeleteRoutine").attr('href', '@Url.Action("SubmitDeleteRoutine2","Home")' + '?NidRoutine=' + nid + '&Direction=' + $("#CurrentDirection").val());
+            $("#routineModal1").modal();
+        }
+        function DeleteProgress(e, nid) {
+            e.preventDefault();
+            $("#routineModalLabel").text('delete Progress');
+            $("#DeleteProgressSection").removeAttr('hidden');
+            $("#DeleteSection").attr('hidden', 'hidden');
+            $("#EditSection").attr('hidden', 'hidden');
+            $("#AddProgressSection").attr('hidden', 'hidden');
+            $("#txtDeleteProgress").text('are you sure to delete progress ?');
+            $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteRoutineProgress","Home")' + '?NidRoutineProgress=' + nid + '&Direction=' + $("#CurrentDirection").val());
+            $("#routineModal1").modal();
+        }
+        function AddModal(e)
+        {
+            e.preventDefault();
+            $("#routineModalLabel").text('add Progress');
+            $("#AddProgressSection").removeAttr('hidden');
+            $("#DeleteSection").attr('hidden', 'hidden');
+            $("#EditSection").attr('hidden', 'hidden');
+            $("#DeleteProgressSection").attr('hidden', 'hidden');
+            $("#routineModal1").modal();
+        }
+    </script>
+}
+

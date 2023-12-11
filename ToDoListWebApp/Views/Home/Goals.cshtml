@@ -40,7 +40,7 @@
                     <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3"  style="background-color:@Model.bgColor[genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
                         <p style="justify-content:right;display:contents;">
-                            Period : @goal.FromDate.ToShortDateString() - @goal.ToDate.ToShortDateString()
+                            Period : @ToDoListWebApp.Helpers.Dates.ToPersianDate2(goal.FromDate) - @ToDoListWebApp.Helpers.Dates.ToPersianDate2(goal.ToDate)
                         </p>
                     </a>
                     <!-- Card Content - Collapse -->
@@ -104,7 +104,7 @@
                     <a href="@Url.Action("Goal","Home",new {NidGoal = goal.NidGoal})" class="d-block card-header py-3" style="background-color:@Model.bgColor[genRandomNumber()];">
                         <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@goal.Title</h6>
                         <p style="justify-content:right;display:contents;">
-                                Period : @goal.FromDate.ToShortDateString() - @goal.ToDate.ToShortDateString()
+                                Period : @ToDoListWebApp.Helpers.Dates.ToPersianDate2(goal.FromDate) - @ToDoListWebApp.Helpers.Dates.ToPersianDate2(goal.ToDate)
                         </p>
                     </a>
                     <!-- Card Content - Collapse -->

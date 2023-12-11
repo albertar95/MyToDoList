@@ -17,6 +17,41 @@ namespace ToDoListWebApi.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.10");
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Account", b =>
+                {
+                    b.Property<Guid>("NidAccount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 0)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("LastModified")
+                        .HasColumnType("datetime");
+
+                    b.Property<decimal>("LendAmount")
+                        .HasColumnType("decimal(18, 0)");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NidAccount");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Accounts");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.Goal", b =>
                 {
                     b.Property<Guid>("NidGoal")
@@ -54,6 +89,62 @@ namespace ToDoListWebApi.Migrations
                     b.ToTable("Goals");
                 });
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Note", b =>
+                {
+                    b.Property<Guid>("NidNote")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("NoteContent")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NidNote");
+
+                    b.HasIndex("GroupId");
+
+                    b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.NoteGroup", b =>
+                {
+                    b.Property<Guid>("NidGroup")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(250)
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NidGroup");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("NoteGroups");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.Progress", b =>
                 {
                     b.Property<Guid>("NidProgress")
@@ -83,6 +174,69 @@ namespace ToDoListWebApi.Migrations
                     b.ToTable("Progresses");
                 });
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Routine", b =>
+                {
+                    b.Property<Guid>("NidRoutine")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("FromDate")
+                        .HasColumnType("date");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("RepeatDays")
+                        .IsRequired()
+                        .HasMaxLength(25)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("RepeatType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("Todate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NidRoutine");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Routines");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.RoutineProgress", b =>
+                {
+                    b.Property<Guid>("NidRoutineProgress")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime>("ProgressDate")
+                        .HasColumnType("date");
+
+                    b.Property<Guid>("RoutineId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NidRoutineProgress");
+
+                    b.HasIndex("RoutineId");
+
+                    b.ToTable("RoutineProgresses");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.Schedule", b =>
                 {
                     b.Property<Guid>("NidSchedule")
@@ -102,6 +256,43 @@ namespace ToDoListWebApi.Migrations
                     b.HasIndex("TaskId");
 
                     b.ToTable("Schedules");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.Shield", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TargetUrl")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Shields");
                 });
 
             modelBuilder.Entity("ToDoListWebApi.Models.Task", b =>
@@ -146,6 +337,41 @@ namespace ToDoListWebApi.Migrations
                     b.ToTable("Tasks");
                 });
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Transaction", b =>
+                {
+                    b.Property<Guid>("NidTransaction")
+                        .HasColumnType("TEXT");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 0)");
+
+                    b.Property<DateTime>("CreateDate")
+                        .HasColumnType("datetime");
+
+                    b.Property<Guid>("PayerAccount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<Guid>("RecieverAccount")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("TransactionReason")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("TEXT");
+
+                    b.Property<byte>("TransactionType")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("NidTransaction");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Transactions");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.User", b =>
                 {
                     b.Property<Guid>("NidUser")
@@ -184,6 +410,17 @@ namespace ToDoListWebApi.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Account", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.User", "User")
+                        .WithMany("Accounts")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Accounts_Users");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.Goal", b =>
                 {
                     b.HasOne("ToDoListWebApi.Models.User", "User")
@@ -191,6 +428,28 @@ namespace ToDoListWebApi.Migrations
                         .HasForeignKey("UserId")
                         .IsRequired()
                         .HasConstraintName("FK_Goals_Users");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.Note", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.NoteGroup", "Group")
+                        .WithMany("Notes")
+                        .HasForeignKey("GroupId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Notes_NoteGroups");
+
+                    b.Navigation("Group");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.NoteGroup", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.User", "User")
+                        .WithMany("NoteGroups")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_NoteGroups_Users");
 
                     b.Navigation("User");
                 });
@@ -214,6 +473,28 @@ namespace ToDoListWebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Routine", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.User", "User")
+                        .WithMany("Routines")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Routines_Users");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.RoutineProgress", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.Routine", "Routine")
+                        .WithMany("RoutineProgresses")
+                        .HasForeignKey("RoutineId")
+                        .IsRequired()
+                        .HasConstraintName("FK_RoutineProgresses_Routines");
+
+                    b.Navigation("Routine");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.Schedule", b =>
                 {
                     b.HasOne("ToDoListWebApi.Models.Task", "Task")
@@ -223,6 +504,17 @@ namespace ToDoListWebApi.Migrations
                         .HasConstraintName("FK_Schedules_Tasks");
 
                     b.Navigation("Task");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.Shield", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.User", "User")
+                        .WithMany("Shields")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Shields_Users");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("ToDoListWebApi.Models.Task", b =>
@@ -244,9 +536,30 @@ namespace ToDoListWebApi.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ToDoListWebApi.Models.Transaction", b =>
+                {
+                    b.HasOne("ToDoListWebApi.Models.User", "User")
+                        .WithMany("Transactions")
+                        .HasForeignKey("UserId")
+                        .IsRequired()
+                        .HasConstraintName("FK_Transactions_Users");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("ToDoListWebApi.Models.Goal", b =>
                 {
                     b.Navigation("Tasks");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.NoteGroup", b =>
+                {
+                    b.Navigation("Notes");
+                });
+
+            modelBuilder.Entity("ToDoListWebApi.Models.Routine", b =>
+                {
+                    b.Navigation("RoutineProgresses");
                 });
 
             modelBuilder.Entity("ToDoListWebApi.Models.Schedule", b =>
@@ -261,11 +574,21 @@ namespace ToDoListWebApi.Migrations
 
             modelBuilder.Entity("ToDoListWebApi.Models.User", b =>
                 {
+                    b.Navigation("Accounts");
+
                     b.Navigation("Goals");
+
+                    b.Navigation("NoteGroups");
 
                     b.Navigation("Progresses");
 
+                    b.Navigation("Routines");
+
+                    b.Navigation("Shields");
+
                     b.Navigation("Tasks");
+
+                    b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618
         }

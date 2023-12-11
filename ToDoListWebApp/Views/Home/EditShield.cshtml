@@ -1,0 +1,44 @@
+﻿@model ToDoListWebApp.Models.Shield
+@{
+    ViewData["Title"] = "EditShield";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit Shield</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="SubmitEditShield">
+            <input type="text" name="Id" value="@Model.Id" hidden />
+            <input type="text" name="UserId" value="@Model.UserId" hidden />
+            <input type="text" name="CreateDate" value="@Model.CreateDate" hidden />
+            <input type="text" name="LastModified" value="@Model.LastModified" hidden />
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" value="@Model.Title" autofocus />
+            </div>
+            <div class="form-group">
+                <label asp-for="TargetUrl" class="control-label"></label>
+                <input asp-for="TargetUrl" class="form-control" value="@Model.TargetUrl" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" value="@Model.Username" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" value="@ToDoListWebApp.Helpers.Encryption.DecryptString(Model.Password)" />
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4 text-center">
+                        <input type="submit" value="Update" class="btn btn-warning" />
+                        <a class="btn btn-outline-info" asp-action="Shields">Back to List</a>
+                    </div>
+                    <div class="col-lg-4"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

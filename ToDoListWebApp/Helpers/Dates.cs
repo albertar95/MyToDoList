@@ -14,8 +14,16 @@ namespace ToDoListWebApp.Helpers
         public static Tuple<string, string> ToPersianDate(Tuple<DateTime, DateTime> dates) 
         {
             PersianCalendar pc = new PersianCalendar();
-            return new Tuple<string, string>($"{pc.GetYear(dates.Item1)}/{pc.GetMonth(dates.Item1)}/{pc.GetDayOfMonth(dates.Item1)}",
-                $"{pc.GetYear(dates.Item2)}/{pc.GetMonth(dates.Item2)}/{pc.GetDayOfMonth(dates.Item2)}");
+            return new Tuple<string, string>($"{pc.GetYear(dates.Item1).ToString("0000")}/{pc.GetMonth(dates.Item1).ToString("00")}/{pc.GetDayOfMonth(dates.Item1).ToString("00")}",
+                $"{pc.GetYear(dates.Item2).ToString("0000")}/{pc.GetMonth(dates.Item2).ToString("00")}/{pc.GetDayOfMonth(dates.Item2).ToString("00")}");
+        }
+        public static string ToPersianDate2(DateTime date,bool IncludeTime = false)
+        {
+            PersianCalendar pc = new PersianCalendar();
+            if(!IncludeTime)
+                return $"{pc.GetYear(date).ToString("0000")}/{pc.GetMonth(date).ToString("00")}/{pc.GetDayOfMonth(date).ToString("00")}";
+            else
+                return $"{pc.GetYear(date).ToString("0000")}/{pc.GetMonth(date).ToString("00")}/{pc.GetDayOfMonth(date).ToString("00")} {date.Hour.ToString("00")}:{date.Minute.ToString("00")}:{date.Second.ToString("00")}";
         }
     }
 }

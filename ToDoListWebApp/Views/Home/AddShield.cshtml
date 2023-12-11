@@ -1,0 +1,41 @@
+﻿@model ToDoListWebApp.Models.Shield
+@{
+    ViewData["Title"] = "AddShield";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Add Shield</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="SubmitAddShield">
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input asp-for="Title" class="form-control" autofocus />
+            </div>
+            <div class="form-group">
+                <label asp-for="TargetUrl" class="control-label"></label>
+                <input asp-for="TargetUrl" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" />
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4 text-center">
+                        <input type="submit" value="Create" class="btn btn-primary" />
+                        <a class="btn btn-outline-info" asp-action="Shields">Back to List</a>
+                    </div>
+                    <div class="col-lg-4"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

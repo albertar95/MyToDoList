@@ -1,0 +1,118 @@
+﻿@model List<ToDoListWebApp.Models.Shield>
+@{
+    ViewData["Title"] = "Shields";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="card o-hidden border-0 shadow-lg my-5">
+    <div class="card-body">
+        <div class="row">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" id="successDiv" hidden>
+                <p id="successMessage"></p>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="errorDiv" hidden>
+                <p id="errorMessage"></p>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <!-- Nested Row within Card Body -->
+        <div class="row">
+            <div class="col-lg-12">
+                <div class="p-9">
+                    <div class="text-center">
+                        <h1 class="h4 text-gray-900 mb-4">User Information</h1>
+                    </div>
+                    <a href="@Url.Action("AddShield","Home")" style="width:120px;margin:15px;" class="btn btn-block btn-outline-success">add shield</a>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                    <thead style="text-align:center;">
+                        <tr>
+                            <th>Title</th>
+                            <th>Url</th>
+                            <th>Username</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var sh in Model.OrderByDescending(p => p.CreateDate))
+                        {
+                            <tr style="text-align:center;">
+                                <td>@sh.Title</td>
+                                <td>@sh.TargetUrl</td>
+                                <td>@sh.Username</td>
+                                <td>
+                                    <a href="@Url.Action("EditShield","Home",new { NidShield = sh.Id })" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>
+                                    <a href="@Url.Action("ShieldDetail","Home",new { NidShield = sh.Id })" class="btn btn-outline-info"><i class="fa fa-info"></i></a>
+                                    <a href="#" onclick="DeleteShield(event,'@sh.Id','@sh.Title')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Logout Modal-->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">are you sure you want to delete this shield?</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="txtmodalBody"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                <a class="btn btn-primary" href="#" id="btnMDelete">delete</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            if ('@TempData["ShieldSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["ShieldSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["ShieldError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["ShieldError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function DeleteShield(e,nidshield, title) {
+            e.preventDefault();
+            $("#txtmodalBody").text('title : ' + title);
+            $("#btnMDelete").attr('href', '@Url.Action("SubmitDeleteShield","Home")' + '?NidShield=' + nidshield);
+            $("#deleteModal").modal();
+        }
+    </script>
+}
+
+

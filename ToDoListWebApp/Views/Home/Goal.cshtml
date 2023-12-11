@@ -81,7 +81,7 @@
                                 <tr>
                                     <th></th>
                                     <th></th>
-                                    <th style="text-align:center;">sum : @Model.Tasks.Where(p => p.TaskStatus == false).Sum(q => q.TaskWeight) %</th>
+                                    <th style="text-align:center;" id="txtSumTaskWeight">sum : @Model.Tasks.Where(p => p.TaskStatus == false).Sum(q => q.TaskWeight) %</th>
                                 </tr>
                             </tfoot>
                         }
@@ -113,7 +113,7 @@
                                     </td>
                                     <td>@tsk.Title</td>
                                     <td>@tsk.TaskWeight %</td>
-                                    <td>@tsk.ClosureDate.Value.ToShortDateString()</td>
+                                    <td>@ToDoListWebApp.Helpers.Dates.ToPersianDate2(tsk.ClosureDate.Value)</td>
                                 </tr>
                             }
                         </tbody>
@@ -396,7 +396,7 @@
                     datatype: 'json',
                     data: { NidGoal: '@Model.Goal.NidGoal', NidTask: nidtask, Title: title, TWeight: estimate },
                     success: function (result) {
-                        //window.location.reload();
+                        window.location.reload();
                     },
                     error: function () {
                         alert("error occured while editing task!")

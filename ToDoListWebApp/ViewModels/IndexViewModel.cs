@@ -7,7 +7,9 @@ namespace ToDoListWebApp.ViewModels
         public IEnumerable<Progress> Progresses { get; set; } = null!;
         public IEnumerable<Models.Schedule> Schedules { get; set; } = null!;
         public IEnumerable<Models.Task> Tasks { get; set; } = null!;
+        public IEnumerable<Models.Task> AllTasks { get; set; } = null!;
         public IEnumerable<Goal> Goals { get; set; } = null!;
+        public IEnumerable<Goal> AllGoals { get; set; } = null!;
         public string[] DatePeriodInfo { get; set; } = null!;
         public string[] PersianDatePeriodInfo { get; set; } = null!;
         public DateTime StartDate { get; set; }

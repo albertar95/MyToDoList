@@ -5,4 +5,17 @@
 }
 
 <h1>Profile</h1>
-
+<div class="row mb-5" style="text-align:left;">
+    <img src="@Url.Content("~/img/undraw_profile.svg")" style="width:200px;height:20vh;" />
+</div>
+<div class="row">
+    <p style="margin-top:8px;">username : </p>
+    <h2 style="margin-bottom:15px;margin-left:10px;">@User.Claims.Where(p => p.Type == "Username").FirstOrDefault().Value</h2>
+</div>
+<div class="row">
+    <p style="margin-top:8px;">last login date : </p>
+    @if (!string.IsNullOrWhiteSpace(User.Claims.Where(p => p.Type == "LastLoginDate").FirstOrDefault().Value))
+    {
+        <h2 style="margin-bottom:15px;margin-left:10px;">@ToDoListWebApp.Helpers.Dates.ToPersianDate2(DateTime.Parse(User.Claims.Where(p => p.Type == "LastLoginDate").FirstOrDefault().Value),true)</h2>
+    }
+</div>

@@ -1,0 +1,32 @@
+﻿@model ToDoListWebApp.Models.NoteGroup
+@{
+    ViewData["Title"] = "EditNoteGroup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit Folder</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form action="SubmitEditNoteGroup">
+            <input name="NidGroup" value="@Model.NidGroup" hidden />
+            <input name="CreateDate" value="@Model.CreateDate" hidden />
+            <input name="ModifiedDate" value="@Model.ModifiedDate" hidden />
+            <input name="UserId" value="@Model.UserId" hidden />
+            <div class="form-group">
+                <input name="Title" value="@Model.Title" class="form-control" autofocus />
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4"></div>
+                    <div class="col-lg-4 text-center">
+                        <input type="submit" value="edit" class="btn btn-warning" />
+                        <a class="btn btn-outline-info" asp-action="NoteGroups">Back to List</a>
+                    </div>
+                    <div class="col-lg-4"></div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+

@@ -1,0 +1,41 @@
+﻿@model ToDoListWebApp.Models.Shield
+@{
+    ViewData["Title"] = "ShieldDetail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Shield Detail</h1>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="">
+            <div class="form-group">
+                <label asp-for="Title" class="control-label"></label>
+                <input type="text" class="form-control" name="Title" value="@Model.Title" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="TargetUrl" class="control-label"></label>
+                <input type="text" class="form-control" name="TargetUrl" value="@Model.TargetUrl" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Username" class="control-label"></label>
+                <input type="text" class="form-control" name="Username" value="@Model.Username" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="Password" class="control-label"></label>
+                <input type="text" class="form-control" name="Password" value="@ToDoListWebApp.Helpers.Encryption.DecryptString(Model.Password)" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="CreateDate" class="control-label"></label>
+                <input type="text" class="form-control" name="CreateDate" value="@Model.CreateDate" readonly />
+            </div>
+            <div class="form-group">
+                <label asp-for="LastModified" class="control-label"></label>
+                <input type="text" class="form-control" name="LastModified" value="@Model.LastModified" readonly />
+            </div>
+            <div class="form-group">
+                <a class="btn btn-outline-info" asp-action="Shields">Back to List</a>
+            </div>
+        </form>
+    </div>
+</div>

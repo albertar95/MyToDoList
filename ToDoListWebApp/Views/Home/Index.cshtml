@@ -6,6 +6,7 @@
 }
 
 <div id="PageWrapper">
+    <input id="CurrentDirection" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <a href="#" onclick="ChangeDate(event,@Model.DatePeriodInfo[1])"><i class="fa fa-sm fa-arrow-left"></i>&nbsp; Previous Week</a>
@@ -27,10 +28,10 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Saturday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -58,11 +59,11 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }
                                 else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Sunday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -90,11 +91,11 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }
                                 else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Monday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -122,11 +123,11 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }
                                 else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Tuesday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -154,11 +155,11 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }
                                 else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Wednesday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -186,11 +187,11 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }
                                 else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Thursday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -218,11 +219,11 @@
                             {
                                 @if (Model.Progresses.Count(p => p.ScheduleId == sch.NidSchedule) > 0)
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title     -    @Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).Sum(q => q.ProgressTime) hour(s)</div>
                                 }
                                 else
                                 {
-                                    <div class="h6 mb-0 text-gray-800">@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
+                                    <div class="h6 mb-0 text-gray-800">@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</div>
                                 }
                             }
                             @if (Model.Progresses.Where(p => Model.Schedules.Where(p => p.ScheduleDate.DayOfWeek == DayOfWeek.Friday).Select(q => q.NidSchedule).Contains(p.ScheduleId)).Count() > 0)
@@ -258,10 +259,10 @@
                         @foreach (var sch in Model.Schedules.OrderBy(p => p.ScheduleDate))
                         {
                             <tr style="text-align:center;">
-                                <td>@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</td>
+                                <td>@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</td>
                                 <td>@sch.ScheduleDate.DayOfWeek</td>
                                 <td>
-                                    <a href="#" onclick="DeleteModal(event,1,'@sch.NidSchedule','@sch.ScheduleDate.DayOfWeek','@Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                    <a href="#" onclick="DeleteModal(event,1,'@sch.NidSchedule','@sch.ScheduleDate.DayOfWeek','@Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                                 </td>
                             </tr>
                         }
@@ -287,11 +288,11 @@
                             @foreach (var prog in Model.Progresses.Where(p => p.ScheduleId == sch.NidSchedule).OrderBy(p => p.CreateDate))
                             {
                                 <tr style="text-align:center;">
-                                    <td>@Model.Tasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title</td>
+                                    <td>@Model.AllTasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title</td>
                                     <td>@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek</td>
                                     <td>@prog.ProgressTime</td>
                                     <td>
-                                        <a href="#" onclick="DeleteModal(event,2,'@prog.NidProgress','@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek','@Model.Tasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                        <a href="#" onclick="DeleteModal(event,2,'@prog.NidProgress','@Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).ScheduleDate.DayOfWeek','@Model.AllTasks.FirstOrDefault(p => p.NidTask == Model.Schedules.FirstOrDefault(p => p.NidSchedule == prog.ScheduleId).TaskId).Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
                                         <a href="#" onclick="EditProgress('@prog.NidProgress','@prog.ScheduleId','@prog.ProgressTime','@prog.CreateDate','@prog.Description','@prog.UserId')" class="btn btn-warning"><i class="fa fa-pen"></i></a>
                                     </td>
                                 </tr>
@@ -315,6 +316,7 @@
             <div class="modal-body">
                 <div id="AddScheduleSection" hidden>
                     <form asp-action="SubmitAddSchedule" enctype="multipart/form-data">
+                        <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                         <div class="form-group">
                                 <select id="GoalId" class="form-control" onchange="SetTasks(this)" required>
                                 <option disabled selected>select goal</option>
@@ -358,6 +360,7 @@
                 </div>
                 <div id="AddProgressSection" hidden>
                     <form asp-action="SubmitAddProgress" enctype="multipart/form-data">
+                            <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                         <div class="form-group">
                                 <select id="sltScheduleDate2" class="form-control" onchange="SetSchedule(this)" required>
                                 <option>select schedule day</option>
@@ -375,7 +378,7 @@
                                 <option disabled selected>select schedule</option>
                                 @foreach (var sch in Model.Schedules.OrderBy(p => p.ScheduleDate))
                                 {
-                                        <option value="@sch.NidSchedule" title="@sch.ScheduleDate" hidden>@Model.Goals.FirstOrDefault(p => p.NidGoal == Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).GoalId).Title - @Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</option>
+                                        <option value="@sch.NidSchedule" title="@sch.ScheduleDate" hidden>@Model.AllGoals.FirstOrDefault(p => p.NidGoal == Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).GoalId).Title - @Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</option>
                                 }
                             </select>
                         </div>
@@ -397,6 +400,7 @@
                     </form>
                 </div>
                 <div id="DeleteScheduleSection" hidden>
+                        <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                     <div class="form-group">
                         <p id="txtDeleteSchedule"></p>
                     </div>
@@ -411,6 +415,7 @@
                     </div>
                 </div>
                 <div id="DeleteProgressSection" hidden>
+                        <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                     <div class="form-group">
                         <p id="txtDeleteProgress"></p>
                     </div>
@@ -426,6 +431,7 @@
                 </div>
                 <div id="EditProgressSection" hidden>
                     <form asp-action="SubmitEditProgress" enctype="multipart/form-data">
+                            <input name="Direction" value="@string.Format("{0}",int.Parse(Model.DatePeriodInfo[1]) + 1)" hidden />
                         <input type="text" id="txtNidProgress" name="NidProgress" hidden />
                         <input type="datetime" id="txtCreateDate" name="CreateDate" hidden />
                         <input type="text" id="txtUserId" name="UserId" hidden />
@@ -434,7 +440,7 @@
                                 <option>select schedule</option>
                                 @foreach (var sch in Model.Schedules.OrderBy(p => p.ScheduleDate))
                                 {
-                                    <option value="@sch.NidSchedule">@sch.ScheduleDate.DayOfWeek - @Model.Tasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</option>
+                                    <option value="@sch.NidSchedule">@sch.ScheduleDate.DayOfWeek - @Model.AllTasks.FirstOrDefault(p => p.NidTask == sch.TaskId).Title</option>
                                 }
                             </select>
                         </div>
@@ -494,7 +500,7 @@
                 $("#DeleteProgressSection").attr('hidden', 'hidden');
                 $("#EditProgressSection").attr('hidden', 'hidden');
                 $("#txtDeleteSchedule").text('are you sure to delete schedule ' + title + ' in ' + day + ' ?');
-                $("#btnSubmitDeleteSchedule").attr('href', '@Url.Action("SubmitDeleteSchedule","Home")' + '?NidSchedule=' + nid);
+                $("#btnSubmitDeleteSchedule").attr('href', '@Url.Action("SubmitDeleteSchedule","Home")' + '?NidSchedule=' + nid + '&Direction=' + $("#CurrentDirection").val());
                 $("#indexModal").modal();
             }
             if (actionType == 2)//delete progress
@@ -506,7 +512,7 @@
                 $("#DeleteScheduleSection").attr('hidden', 'hidden');
                 $("#EditProgressSection").attr('hidden', 'hidden');
                 $("#txtDeleteProgress").text('are you sure to delete progress ' + title + ' in ' + day + ' ?');
-                $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteProgress","Home")' + '?NidProgress=' + nid);
+                $("#btnSubmitDeleteProgress").attr('href', '@Url.Action("SubmitDeleteProgress","Home")' + '?NidProgress=' + nid + '&Direction=' + $("#CurrentDirection").val());
                 $("#indexModal").modal();
             }
         }

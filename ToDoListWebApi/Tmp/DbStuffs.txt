@@ -10,3 +10,35 @@
         //scaffold-dbcontext
 
         scaffold-dbcontext "Server=.;Database=ToDoListDb;User Id=sa;Password=safa@123;TrustServerCertificate=true;" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -Force
+
+
+
+        //two dbs
+                public string DbPath { get; }
+        public ToDoListDbContext()
+        {
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
+        }
+
+        public ToDoListDbContext(DbContextOptions<ToDoListDbContext> options)
+            : base(options)
+        {
+            //var folder = Environment.SpecialFolder.LocalApplicationData;
+            //var path = Environment.GetFolderPath(folder);
+            //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
+        }
+
+                    //sql database
+
+            //    IConfigurationRoot configuration = new ConfigurationBuilder()
+            //.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+            //.AddJsonFile("appsettings.json")
+            //.Build();
+            //    optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+
+            //sqlite database
+            optionsBuilder.UseSqlite($"Data Source={DbPath}");

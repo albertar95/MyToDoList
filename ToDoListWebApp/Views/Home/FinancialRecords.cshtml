@@ -1,0 +1,349 @@
+﻿@model ToDoListWebApp.ViewModels.FinanceViewModel
+@{
+    ViewData["Title"] = "FinancialRecords";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 d-flex">
+    <a href="#" onclick="AddAccount(event)" class="btn btn-outline-success" style="width:80px;justify-content:right;height:38px;margin-right:5px;overflow:hidden;"><i class="fa fa-plus"></i> ACC</a>
+    <a href="#" onclick="AddTransaction(event)" class="btn btn-block btn-outline-info" style="width:80px;justify-content:right;height:38px;overflow:hidden;"><i class="fa fa-plus"></i> TR</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+@{
+    int genRandomNumber(){
+        Random r = new Random();
+        return r.Next(26);
+    }
+}
+@for (var i = 0; i <= Model.Accounts.Where(p => p.IsActive == true && p.Title.Contains("(")).Count() / 6; i++)
+{
+    <div class="row">
+        @foreach (var acc in Model.Accounts.Where(p => p.IsActive == true && p.Title.Contains("(")).OrderBy(p => p.Title).Skip(i * 6).Take(6))
+        {
+            <div class="col-xl-2">
+                <div class="card shadow mb-2 d-flex">
+                    <!-- Card Header - Accordion -->
+                    <a href="@Url.Action("Account","Home",new {NidAccount = acc.NidAccount})" class="d-block card-header py-3" style="text-align:center;background-color:@Model.bgColor[genRandomNumber()];">
+                        <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@acc.Title</h6>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show">
+                        <div class="card-body">
+                            <p>Amount : @string.Format("{0:n0}",acc.Amount) $</p>
+                            <p>Lend : @string.Format("{0:n0}",acc.LendAmount) $</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+@for (var i = 0; i <= Model.Accounts.Where(p => p.IsActive == true && !p.Title.Contains("(")).Count() / 6; i++)
+{
+    <div class="row">
+        @foreach (var acc in Model.Accounts.Where(p => p.IsActive == true && !p.Title.Contains("(")).OrderByDescending(p => p.Amount).Skip(i * 6).Take(6))
+        {
+            <div class="col-xl-2">
+                <div class="card shadow mb-2 d-flex" style="opacity:60%;">
+                    <!-- Card Header - Accordion -->
+                    <a href="@Url.Action("Account","Home",new {NidAccount = acc.NidAccount})" class="d-block card-header py-3" style="text-align:center;background-color:@Model.bgColor[genRandomNumber()];">
+                        <h6 class="font-weight-bold text-primary" style="margin:0 auto;">@acc.Title</h6>
+                    </a>
+                    <!-- Card Content - Collapse -->
+                    <div class="collapse show">
+                        <div class="card-body">
+                            <p>Amount : @string.Format("{0:n0}",acc.Amount) $</p>
+                            <p>Lend : @string.Format("{0:n0}",acc.LendAmount) $</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+<div class="row mt-5 mb-5">
+    @if(!Model.AllTransactions)
+    {
+        <a href="@Url.Action("FinancialRecords","Home",new { IncludeAll = true })" class="btn btn-block btn-outline-info" style="width:200px;justify-content:right;height:38px;overflow:hidden;">all Tr</a>
+    }
+</div>
+<div class="row">
+    <div class="table-responsive">
+        <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+            <thead style="text-align:center;">
+                <tr>
+                    <th>Tr Type</th>
+                    <th>From Acc</th>
+                    <th>To Acc</th>
+                    <th>Amount</th>
+                    <th>Create Date</th>
+                    <th>Reason</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var tr in Model.Transactions.OrderByDescending(p => p.CreateDate))
+                {
+                    <tr style="text-align:center;">
+                        <td>@ToDoListWebApp.ViewModels.FinanceViewModel.TransactionTypes.FirstOrDefault(p => p.Item1 == tr.TransactionType).Item2</td>
+                        <td>@Model.Accounts.FirstOrDefault(p => p.NidAccount == tr.PayerAccount).Title</td>
+                        <td>@Model.Accounts.FirstOrDefault(p => p.NidAccount == tr.RecieverAccount).Title</td>
+                        <td>@string.Format("{0:n0}",tr.Amount) $</td>
+                        <td>@ToDoListWebApp.Helpers.Dates.ToPersianDate2(tr.CreateDate,true)</td>
+                        <td>@tr.TransactionReason</td>
+                        <td>
+                            @*<a href="#" onclick="EditTransaction(event,'@tr.NidTransaction')" class="btn btn-outline-warning"><i class="fa fa-pen"></i></a>*@
+                            <a href="#" onclick="DeleteTransaction(event,'@tr.NidTransaction')" class="btn btn-outline-danger"><i class="fa fa-trash"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="financeModal" tabindex="-1" role="dialog" aria-labelledby="financeModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="financeModalLabel"></h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="AccountSection" hidden>
+                    <input id="txtNidAccount" type="text" hidden />
+                    <div class="form-group">
+                        <input id="txtAccountTitle" type="text" class="form-control" placeholder="Title" autofocus />
+                    </div>
+                    <div class="form-group">
+                        <input id="txtAccountAmount" type="text" class="form-control" placeholder="Amount" />
+                    </div>
+                    <div class="form-group">
+                        <div class="custom-control custom-checkbox small">
+                            <input type="checkbox" class="custom-control-input" id="AccountIsActive" name="IsActive" onclick="$(this).attr('value', this.checked ? 'true' : 'false')">
+                            <label class="custom-control-label" for="IsActive">
+                                Is Active
+                            </label>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-4 text-center">
+                                <a href="#" class="btn btn-primary" onclick="SubmitAddAccount(event)" id="btnSubmitAddAccount" hidden>create</a>
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="TransactionSection" hidden>
+                    <input id="txtNidTransaction" type="text" hidden />
+                    <div class="form-group">
+                        <select id="TransactionType" class="form-control" required>
+                            <option disabled selected>select Tr Type</option>
+                            @foreach (var typ in ToDoListWebApp.ViewModels.FinanceViewModel.TransactionTypes)
+                            {
+                                <option value="@typ.Item1">@typ.Item2</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="PayerAccount" class="form-control" required>
+                            <option value="0" disabled selected>select Payer</option>
+                            @foreach (var acc in Model.Accounts)
+                            {
+                                <option value="@acc.NidAccount">@acc.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select id="RecieverAccount" class="form-control" required>
+                            <option value="0" disabled selected>select Reciever</option>
+                            @foreach (var acc in Model.Accounts)
+                            {
+                                <option value="@acc.NidAccount">@acc.Title</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input id="txtTransactionAmount" type="text" class="form-control" placeholder="Amount" />
+                    </div>
+                    <div class="form-group">
+                        <textarea id="txtTransactionReason" class="form-control" placeholder="Reason"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-4 text-center">
+                                <a href="#" class="btn btn-primary" onclick="SubmitAddTransaction(event)" id="btnSubmitAddTransaction" hidden>create</a>
+                                <a href="#" class="btn btn-warning" onclick="SubmitEditTransaction(event)" id="btnSubmitEditTransaction" hidden>Edit</a>
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="DeleteSection" hidden>
+                    <div class="form-group">
+                        <p id="txtDelete"></p>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-4 text-center">
+                                <a href="#" class="btn btn-danger" id="btnSubmitDelete" hidden>delete</a>
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function () {
+            $(".modal").on('shown.bs.modal', function () {
+                $(this).find('[autofocus]').focus();
+            });
+            $("#dataTable1").DataTable({
+            "order": [[4, "desc"]]});
+            if ('@TempData["FinanceSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["FinanceSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["FinanceError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["FinanceError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function AddAccount(e)
+        {
+            e.preventDefault();
+            $("#txtNidAccount").val('');
+            $("#txtAccountAmount").val('');
+            $("#txtAccountTitle").val('');
+            $("#AccountIsActive").attr('checked','checked');
+            $("#AccountIsActive").val('true');
+            $("#btnSubmitAddAccount").removeAttr('hidden');
+            $("#btnSubmitAddTransaction").attr('hidden', 'hidden');
+            $("#btnSubmitEditTransaction").attr('hidden', 'hidden');
+            $("#btnSubmitDelete").attr('hidden', 'hidden');
+            $("#financeModalLabel").text('Add Account');
+            $("#AccountSection").removeAttr('hidden');
+            $("#DeleteSection").attr('hidden', 'hidden');
+            $("#TransactionSection").attr('hidden', 'hidden');
+            $("#financeModal").modal();
+        }
+        function SubmitAddAccount(e)
+        {
+            e.preventDefault();
+            window.location.href = '@Url.Action("SubmitAddAccount","Home")' + '?Title=' + $("#txtAccountTitle").val()
+                + '&Amount=' + $("#txtAccountAmount").val() + '&IsActive=' + $("#AccountIsActive").val();
+        }
+        function AddTransaction(e)
+        {
+            e.preventDefault();
+            $("#txtNidTransaction").val('');
+            $("#txtTransactionAmount").val('');
+            $("#txtTransactionReason").text('');
+            $("#PayerAccount").val(0);
+            $("#RecieverAccount").val(0);
+            $("#btnSubmitAddTransaction").removeAttr('hidden');
+            $("#btnSubmitAddAccount").attr('hidden', 'hidden');
+            $("#btnSubmitEditTransaction").attr('hidden', 'hidden');
+            $("#btnSubmitDelete").attr('hidden', 'hidden');
+            $("#financeModalLabel").text('Add Transaction');
+            $("#DeleteSection").attr('hidden', 'hidden');
+            $("#TransactionSection").removeAttr('hidden');
+            $("#AccountSection").attr('hidden','hidden');
+            $("#financeModal").modal();
+        }
+        function SubmitAddTransaction(e) {
+            e.preventDefault();
+            window.location.href = '@Url.Action("SubmitAddTransaction","Home")' + '?TrType=' + $("#TransactionType").find(':selected').val()
+                + '&Amount=' + $("#txtTransactionAmount").val() + '&PayerAccount=' + $("#PayerAccount").find(':selected').val()
+                + '&RecieverAccount=' + $("#RecieverAccount").find(':selected').val() + '&Reason=' + $("#txtTransactionReason").val();
+        }
+        function EditTransaction(e,nid)
+        {
+            e.preventDefault();
+            $.ajax(
+                {
+                    url:'@Url.Action("GetTrById","Home")',
+                    type:'post',
+                    datatype:'json',
+                    data:{NidTransaction : nid },
+                    success:function(result)
+                    {
+                        if(result.hasValue)
+                        {
+                            $("#txtNidTransaction").val(result.nidTr);
+                            $("#TransactionType").val(result.trType);
+                            $("#PayerAccount").val(result.pAccount);
+                            $("#RecieverAccount").val(result.rAccount);
+                            $("#txtTransactionReason").val(result.reason);
+                            $("#txtTransactionAmount").val(result.amount);
+                            $("#btnSubmitEditTransaction").removeAttr('hidden');
+                            $("#btnSubmitAddAccount").attr('hidden', 'hidden');
+                            $("#btnSubmitAddTransaction").attr('hidden', 'hidden');
+                            $("#btnSubmitDelete").attr('hidden', 'hidden');
+                            $("#TransactionSection").removeAttr('hidden');
+                            $("#DeleteSection").attr('hidden', 'hidden');
+                            $("#AccountSection").attr('hidden', 'hidden');
+                            $("#financeModal").modal();
+                        }
+                    },
+                    error:function(){}
+                });
+        }
+        function SubmitEditTransaction(e) {
+            e.preventDefault();
+            window.location.href = '@Url.Action("SubmitEditTransaction","Home")' + '?TrType=' + $("#TransactionType").find(':selected').val()
+                + '&Amount=' + $("#txtTransactionAmount").val() + '&PayerAccount=' + $("#PayerAccount").find(':selected').val()
+                + '&RecieverAccount=' + $("#RecieverAccount").find(':selected').val() + '&Reason=' + $("#txtTransactionReason").val()
+                + '&NidTr=' + $("#txtNidTransaction").val();
+        }
+        function DeleteTransaction(e,nid)
+        {
+            e.preventDefault();
+            $("#txtDelete").text('are you sure to delete this transaction?');
+            $("#btnSubmitDelete").attr('href','@Url.Action("SubmitDeleteTransaction","Home")' + '?NidTr=' + nid);
+            $("#DeleteSection").removeAttr('hidden');
+            $("#TransactionSection").attr('hidden', 'hidden');
+            $("#AccountSection").attr('hidden', 'hidden');
+            $("#btnSubmitDelete").removeAttr('hidden');
+            $("#btnSubmitAddAccount").attr('hidden', 'hidden');
+            $("#btnSubmitAddTransaction").attr('hidden', 'hidden');
+            $("#btnSubmitEditTransaction").attr('hidden', 'hidden');
+            $("#financeModal").modal();
+        }
+    </script>
+}

@@ -1,0 +1,462 @@
+﻿@model ToDoListWebApp.ViewModels.RoutineViewModel
+@{
+    ViewData["Title"] = "Routines";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 d-flex">
+    <a href="@Url.Action("RoutineCalendar","Home")" class="btn btn-outline-info" style="width:200px;justify-content:right;height:38px;overflow:hidden;">Calendar</a>
+    </div>
+    <div class="col-lg-6">
+        <div class="alert alert-success alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="successDiv" hidden>
+            <p id="successMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="alert alert-danger alert-dismissible fade show" style="width:fit-content;float:right;" role="alert" id="errorDiv" hidden>
+            <p id="errorMessage"></p>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="row" style="padding:25px;">
+    <div class="col-lg-6 col-md-6 col-sm-6" style="margin-top:1rem;">
+        <div class="row d-flex">
+        <h6 style="margin-left:15px;font-weight:bold;">Daily Routines</h6>
+            <a href="#" onclick="AddModal(event,1)" class="btn btn-block btn-outline-success" style="width:40px;position:absolute;right:15px;top:-15px;"><i class="fa fa-plus"></i></a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable1" width="100%" cellspacing="0">
+                <thead style="text-align:center;">
+                    <tr>
+                        <th>Title</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rot in Model.Routines.Where(p => p.RepeatType == 1 && p.FromDate <= DateTime.Now.Date && p.Todate >= DateTime.Now.Date).OrderBy(p => p.CreateDate))
+                    {
+                        <tr style="text-align:center;">
+                            <td>@rot.Title</td>
+                            <td>
+                                @if (!Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == DateTime.Now.Date))
+                                {
+                                    <a href="#" onclick="DoneModal(event,1,'@rot.NidRoutine','@rot.Title')" class="btn btn-success"><i class="fa fa-check"></i></a>
+                                }else
+                                {
+                                    <a href="#" onclick="UnDoneModal(event,1,'@rot.NidRoutine','@rot.Title')" class="btn btn-info"><i class="fa fa-backward"></i></a>
+                                }
+                                <a href="#" onclick="DeleteModal(event,1,'@rot.NidRoutine','@rot.Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-sm-6" style="margin-top:1rem;">
+        <div class="row d-flex">
+            <h6 style="margin-left:15px;font-weight:bold;">Weekly Routines</h6>
+            <a href="#" onclick="AddModal(event,2)" class="btn btn-block btn-outline-success" style="width:40px;position:absolute;right:15px;top:-15px;"><i class="fa fa-plus"></i></a>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-bordered" id="dataTable2" width="100%" cellspacing="0">
+                <thead style="text-align:center;">
+                    <tr>
+                        <th>Title</th>
+                        <th>Days</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var rot in Model.Routines.Where(p => p.RepeatType == 2 && p.FromDate <= DateTime.Now.Date && p.Todate >= DateTime.Now.Date).OrderBy(p => p.CreateDate))
+                    {
+                        <tr style="text-align:center;">
+                            <td>@rot.Title</td>
+                            <td>
+                                @{
+                                    List<string> tmpDays = new List<string>(); string[] tmparray = rot.RepeatDays.Split(',');Array.Sort(tmparray);
+                                }
+                                @foreach (var day in tmparray)
+                                {
+                                    switch (day)
+                                    {
+                                        case "0":
+                                            tmpDays.Add("all");
+                                            break;
+                                        case "1":
+                                            tmpDays.Add("Sat");
+                                            break;
+                                        case "2":
+                                            tmpDays.Add("Sun");
+                                            break;
+                                        case "3":
+                                            tmpDays.Add("Mon");
+                                            break;
+                                        case "4":
+                                            tmpDays.Add("Tue");
+                                            break;
+                                        case "5":
+                                            tmpDays.Add("Wed");
+                                            break;
+                                        case "6":
+                                            tmpDays.Add("Thu");
+                                            break;
+                                        case "7":
+                                            tmpDays.Add("Fri");
+                                            break;
+                                    }
+                                }
+                                <p>@string.Join(" , ",tmpDays)</p>
+                            </td>
+                            <td>
+                                @if (!Model.RoutineProgresses.Any(p => p.RoutineId == rot.NidRoutine && p.ProgressDate == DateTime.Now.Date))
+                                {
+                                    <a href="#" onclick="DoneModal(event,2,'@rot.NidRoutine','@rot.Title')" class="btn btn-success"><i class="fa fa-check"></i></a>
+                                }else
+                                {
+                                    <a href="#" onclick="UnDoneModal(event,2,'@rot.NidRoutine','@rot.Title')" class="btn btn-info"><i class="fa fa-backward"></i></a>
+                                }
+                                <a href="#" onclick="DeleteModal(event,2,'@rot.NidRoutine','@rot.Title')" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="routineModal" tabindex="-1" role="dialog" aria-labelledby="routineModalLabel"
+     aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="routineModalLabel"></h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="AddDailySection" hidden>
+                    <form asp-action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
+                        <input type="number" id="RepeatType1" name="RepeatType" value="1" hidden />
+                        <input type="text" id="RepeatDays1" name="RepeatDays" value="0" hidden />
+                        <div class="form-group">
+                            <input type="text" id="Title" class="form-control" placeholder="Title" name="Title" autofocus />
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <input type="date" id="FromDate" class="form-control" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" name="FromDate" />
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <input type="date" id="ToDate" class="form-control" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" name="ToDate" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4 text-center">
+                                    <button type="submit" class="btn btn-primary">create</button>
+                                </div>
+                                <div class="col-lg-4"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="AddWeeklySection" hidden>
+                    <form asp-action="SubmitAddRoutine" enctype="multipart/form-data" method="post">
+                        <input type="number" id="RepeatType2" name="RepeatType" value="2" hidden />
+                        <input type="text" id="RepeatDays2" name="RepeatDays" hidden />
+                        <div class="form-group">
+                            <input type="text" id="Title" name="Title" class="form-control" placeholder="Title" autofocus />
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-6">
+                                    <input type="date" id="FromDate" class="form-control" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" name="FromDate" />
+                                </div>
+                                <div class="col-lg-6 text-center">
+                                    <input type="date" id="ToDate" class="form-control" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" name="ToDate" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group d-flex">
+                            <div class="row">
+                                <div class="col col-lg-12">
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(1)" id="cbSat">
+                                            <label class="custom-control-label" for="cbSat">Saturday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(2)" id="cbSun">
+                                            <label class="custom-control-label" for="cbSun">Sunday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(3)" id="cbMon">
+                                            <label class="custom-control-label" for="cbMon">Monday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(4)" id="cbTue">
+                                            <label class="custom-control-label" for="cbTue">Tuesday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(5)" id="cbWed">
+                                            <label class="custom-control-label" for="cbWed">Wednesday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(6)" id="cbThu">
+                                            <label class="custom-control-label" for="cbThu">Thursday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3">
+                                        <div class="custom-control custom-checkbox small">
+                                            <input type="checkbox" class="custom-control-input" onclick="DayChanged(7)" id="cbFri">
+                                            <label class="custom-control-label" for="cbFri">Friday</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4 text-center">
+                                    <button type="submit" class="btn btn-primary">create</button>
+                                </div>
+                                <div class="col-lg-4"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="DeleteDailySection" hidden>
+                    <div class="form-group">
+                        <p id="txtDeleteRoutine"></p>
+                    </div>
+                    <div class="form-group">
+                        <div class="row">
+                            <div class="col-lg-4"></div>
+                            <div class="col-lg-4 text-center">
+                                <a href="#" class="btn btn-danger" id="btnSubmitDeleteRoutine">delete</a>
+                            </div>
+                            <div class="col-lg-4"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="DoneRoutineSection" hidden>
+                    <form asp-action="SubmitDoneRoutine" enctype="multipart/form-data" method="post">
+                        <input name="NidRoutineProgress" type="text" hidden />
+                        <input name="RoutineId" id="RoutineId1" type="text" hidden />
+                        <div class="form-group">
+                            <p id="txtDoneRoutine"></p>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" class="form-control" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" name="ProgressDate" />
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4 text-center">
+                                    <button type="submit" class="btn btn-success" id="btnSubmitDoneRoutine">Done</button>
+                                </div>
+                                <div class="col-lg-4"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div id="UnDoneRoutineSection" hidden>
+                    <form asp-action="SubmitUnDoneRoutine" enctype="multipart/form-data" method="post">
+                        <input name="NidRoutineProgress" type="text" hidden />
+                        <input name="RoutineId" id="RoutineId2" type="text" hidden />
+                        <div class="form-group">
+                            <p id="txtUnDoneRoutine"></p>
+                        </div>
+                        <div class="form-group">
+                            <input type="date" class="form-control" value="@string.Format("{0}-{1}-{2}",DateTime.Now.Year,DateTime.Now.Month.ToString().PadLeft(2,'0'),DateTime.Now.Day.ToString().PadLeft(2,'0'))" name="ProgressDate" />
+                        </div>
+                        <div class="form-group">
+                            <div class="row">
+                                <div class="col-lg-4"></div>
+                                <div class="col-lg-4 text-center">
+                                    <button type="submit" class="btn btn-info" id="btnSubmitDoneRoutine1">undo</button>
+                                </div>
+                                <div class="col-lg-4"></div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts
+    {
+    <script type="text/javascript">
+        $(function()
+        {
+            $(".modal").on('shown.bs.modal', function () {
+                $(this).find('[autofocus]').focus();
+            });
+            if ('@TempData["RoutineSuccess"]' != "") {
+                $("#successDiv").removeAttr('hidden');
+                $("#successMessage").text('@TempData["RoutineSuccess"]');
+                window.setTimeout(function () {
+                    $("#successDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+            if ('@TempData["RoutineError"]' != "") {
+                $("#errorDiv").removeAttr('hidden');
+                $("#errorMessage").text('@TempData["RoutineError"]');
+                window.setTimeout(function () {
+                    $("#errorDiv").attr('hidden', 'hidden');
+                }, 5000);
+            }
+        });
+        function DoneModal(e,type,nid,title)
+        {
+            e.preventDefault();
+            if (type == 1) {
+                $("#routineModalLabel").text('Done Daily Routine');
+                $("#DoneRoutineSection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden', 'hidden');
+                $("#DeleteDailySection").attr('hidden', 'hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#UnDoneRoutineSection").attr('hidden', 'hidden');
+                $("#txtDoneRoutine").text('are you sure to done daily routine ' + title + ' ?');
+            }
+            if (type == 2) {
+                $("#routineModalLabel").text('Done Weekly Routine');
+                $("#DoneRoutineSection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden', 'hidden');
+                $("#DeleteDailySection").attr('hidden', 'hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#UnDoneRoutineSection").attr('hidden', 'hidden');
+                $("#txtDoneRoutine").text('are you sure to done weekly routine ' + title + ' ?');
+            }
+            $("#RoutineId1").val(nid);
+            $("#routineModal").modal();
+        }
+        function UnDoneModal(e,type,nid,title)
+        {
+            e.preventDefault();
+            if (type == 1) {
+                $("#routineModalLabel").text('UnDone Daily Routine');
+                $("#UnDoneRoutineSection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden', 'hidden');
+                $("#DeleteDailySection").attr('hidden', 'hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#DoneRoutineSection").attr('hidden', 'hidden');
+                $("#txtUnDoneRoutine").text('are you sure to undo daily routine ' + title + ' ?');
+            }
+            if (type == 2) {
+                $("#routineModalLabel").text('UnDone Weekly Routine');
+                $("#UnDoneRoutineSection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden', 'hidden');
+                $("#DeleteDailySection").attr('hidden', 'hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#DoneRoutineSection").attr('hidden', 'hidden');
+                $("#txtUnDoneRoutine").text('are you sure to undo weekly routine ' + title + ' ?');
+            }
+            $("#RoutineId2").val(nid);
+            $("#routineModal").modal();
+        }
+        function DeleteModal(e,type,nid,title)
+        {
+            e.preventDefault();
+            if (type == 1) {
+                $("#routineModalLabel").text('delete Daily Routine');
+                $("#DeleteDailySection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden', 'hidden');
+                $("#DoneRoutineSection").attr('hidden', 'hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#UnDoneRoutineSection").attr('hidden', 'hidden');
+                $("#txtDeleteRoutine").text('are you sure to delete daily routine ' + title + ' ?');
+            }
+            if (type == 2) {
+                $("#routineModalLabel").text('delete Weekly Routine');
+                $("#DeleteDailySection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden', 'hidden');
+                $("#DoneRoutineSection").attr('hidden', 'hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#UnDoneRoutineSection").attr('hidden', 'hidden');
+                $("#txtDeleteRoutine").text('are you sure to delete weekly routine ' + title + ' ?');
+            }
+            $("#btnSubmitDeleteRoutine").attr('href', '@Url.Action("SubmitDeleteRoutine","Home")' + '?NidRoutine=' + nid);
+            $("#routineModal").modal();
+        }
+        function AddModal(e,type)
+        {
+            e.preventDefault();
+            if(type == 1)
+            {
+                $("#routineModalLabel").text('Add Daily Routine');
+                $("#AddDailySection").removeAttr('hidden');
+                $("#AddWeeklySection").attr('hidden','hidden');
+                $("#DeleteDailySection").attr('hidden', 'hidden');
+                $("#DoneRoutineSection").attr('hidden', 'hidden');
+                $("#UnDoneRoutineSection").attr('hidden', 'hidden');
+            }
+            if (type == 2) 
+            {
+                $("#routineModalLabel").text('Add Weekly Routine');
+                $("#AddWeeklySection").removeAttr('hidden');
+                $("#AddDailySection").attr('hidden', 'hidden');
+                $("#DeleteDailySection").attr('hidden', 'hidden');
+                $("#DoneRoutineSection").attr('hidden', 'hidden');
+                $("#UnDoneRoutineSection").attr('hidden', 'hidden');
+            }
+            $("#routineModal").modal();
+        }
+        function DayChanged(cbName)
+        {
+            let current = $("#RepeatDays2").val();
+            var days = [];
+            var IsExist = false;
+            if(current != "")
+                days = current.split(",");
+            const index = current.indexOf(cbName);
+            if (index > -1)//exist
+                IsExist = true;
+            var newVal = "";
+            if(IsExist)
+            {
+                days.forEach(function (item) {
+                    if(item != cbName)
+                    {
+                        if(newVal != "")
+                            newVal = newVal + "," + item;
+                        else
+                            newVal = item;
+                    }
+                });
+            }else
+            {
+                if(current != "")
+                    newVal = current + "," + cbName;
+                else
+                    newVal = cbName;
+            }
+            $("#RepeatDays2").val(newVal);
+        }
+    </script>
+}
