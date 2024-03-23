@@ -13,7 +13,7 @@ namespace ToDoListWebApp.Models
             //var folder = Environment.SpecialFolder.LocalApplicationData;
             //var path = Environment.GetFolderPath(folder);
             //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
-            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join("D:\\sqlData\\MytodoListDb", "MyTodoListDb.db");
         }
 
         public ToDoListDbContext(DbContextOptions<ToDoListDbContext> options)
@@ -22,7 +22,7 @@ namespace ToDoListWebApp.Models
             //var folder = Environment.SpecialFolder.LocalApplicationData;
             //var path = Environment.GetFolderPath(folder);
             //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
-            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join("D:\\sqlData\\MytodoListDb", "MyTodoListDb.db");
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;

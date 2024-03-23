@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -10,19 +11,15 @@ namespace ToDoListWebApi.Models
         public string DbPath { get; }
         public ToDoListDbContext()
         {
-            //var folder = Environment.SpecialFolder.LocalApplicationData;
-            //var path = Environment.GetFolderPath(folder);
-            //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
-            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Db", "MyTodoListDb.db");
+            //DbPath = System.IO.Path.Join("D:\\sqlData\\MytodoListDb", "MyTodoListDb.db");
         }
 
         public ToDoListDbContext(DbContextOptions<ToDoListDbContext> options)
             : base(options)
         {
-            //var folder = Environment.SpecialFolder.LocalApplicationData;
-            //var path = Environment.GetFolderPath(folder);
-            //DbPath = System.IO.Path.Join(path, "MyTodoListDb.db");
-            DbPath = System.IO.Path.Join("C:\\sqliteDb", "MyTodoListDb.db");
+            DbPath = System.IO.Path.Join(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "Db", "MyTodoListDb.db");
+            //DbPath = System.IO.Path.Join("D:\\sqlData\\MytodoListDb", "MyTodoListDb.db");
         }
 
         public virtual DbSet<Account> Accounts { get; set; } = null!;

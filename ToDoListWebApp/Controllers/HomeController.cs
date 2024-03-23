@@ -31,8 +31,8 @@ namespace ToDoListWebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        //private static string BaseAddress = "http://192.168.1.10:8061/api/todolist";//local service
-        private static string BaseAddress = "http://141.11.182.163:8061/api/todolist"; // host service
+        //private static string BaseAddress = "http://192.168.1.100:8061/api/todolist";//local service
+        private static string BaseAddress = "https://todolistwebapi.albertar95.ir/api/todolist"; // host service
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;
@@ -105,17 +105,19 @@ namespace ToDoListWebApp.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> SubmitLogin(string Username, string Password, string returnUrl = "")
         {
-            using (HttpClient client = new HttpClient())
+            try
             {
-                var response = await client.GetAsync($"{BaseAddress}/loginuser?Username={Username}&Password={Password}");
-                if (response.IsSuccessStatusCode)
+                using (HttpClient client = new HttpClient())
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    User user = JsonConvert.DeserializeObject<User>(result) ?? new User();
-                    List<Claim> claims = null;
-                    if (user.ProfilePic != null) 
+                    var response = await client.GetAsync($"{BaseAddress}/loginuser?Username={Username}&Password={Password}");
+                    if (response.IsSuccessStatusCode)
                     {
-                       claims = new List<Claim>
+                        var result = await response.Content.ReadAsStringAsync();
+                        User user = JsonConvert.DeserializeObject<User>(result) ?? new User();
+                        List<Claim> claims = null;
+                        if (user.ProfilePic != null)
+                        {
+                            claims = new List<Claim>
                     {
                         new Claim("Username",user.Username),
                         new Claim("LastLoginDate",user.LastLoginDate.ToString()),
@@ -123,10 +125,10 @@ namespace ToDoListWebApp.Controllers
                         new Claim("NidUser",user.NidUser.ToString()),
                         new Claim("Role", "Admin"),
                      };
-                    }
-                    else
-                    {
-                        claims = new List<Claim>
+                        }
+                        else
+                        {
+                            claims = new List<Claim>
                     {
                         new Claim("Username",user.Username),
                         new Claim("LastLoginDate",user.LastLoginDate.ToString()),
@@ -134,27 +136,33 @@ namespace ToDoListWebApp.Controllers
                         new Claim("NidUser",user.NidUser.ToString()),
                         new Claim("Role", "Admin"),
                      };
+                        }
+
+                        var claimsIdentity = new ClaimsIdentity(
+                            claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                        var authProperties = new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.Now.AddHours(8) };
+
+                        await HttpContext.SignInAsync(
+                            CookieAuthenticationDefaults.AuthenticationScheme,
+                            new ClaimsPrincipal(claimsIdentity),
+                            authProperties);
+                        if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                            return Redirect(returnUrl);
+                        else
+                            return RedirectToAction("Index", "Home");
                     }
-
-                    var claimsIdentity = new ClaimsIdentity(
-                        claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                    var authProperties = new AuthenticationProperties { IsPersistent = true, ExpiresUtc = DateTimeOffset.Now.AddHours(8) };
-
-                    await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        new ClaimsPrincipal(claimsIdentity),
-                        authProperties);
-                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        return Redirect(returnUrl);
                     else
-                        return RedirectToAction("Index", "Home");
+                    {
+                        TempData["LoginError"] = "error occured in login.try again";
+                        return RedirectToAction("Login");
+                    }
                 }
-                else
-                {
-                    TempData["LoginError"] = "error occured in login.try again";
-                    return RedirectToAction("Login");
-                }
+            }
+            catch (Exception ex)
+            {
+
+                throw;
             }
         }
         public IActionResult UploadProfile()

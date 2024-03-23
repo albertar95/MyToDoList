@@ -168,7 +168,7 @@
                     <div class="form-group">
                         <select id="PayerAccount" class="form-control" required>
                             <option value="0" disabled selected>select Payer</option>
-                            @foreach (var acc in Model.Accounts)
+                            @foreach (var acc in Model.Accounts.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
                             {
                                 <option value="@acc.NidAccount">@acc.Title</option>
                             }
@@ -177,7 +177,7 @@
                     <div class="form-group">
                         <select id="RecieverAccount" class="form-control" required>
                             <option value="0" disabled selected>select Reciever</option>
-                            @foreach (var acc in Model.Accounts)
+                            @foreach (var acc in Model.Accounts.Where(p => p.IsActive).OrderBy(q => q.Title).ToList())
                             {
                                 <option value="@acc.NidAccount">@acc.Title</option>
                             }

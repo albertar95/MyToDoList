@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Globalization;
+using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
 using ToDoListWebApi.Models;
@@ -13,7 +14,11 @@ namespace ToDoListWebApi.Controllers
     [ApiController]
     public class ToDoListController : ControllerBase
     {
-
+        IWebHostEnvironment _webHost;
+        public ToDoListController(IWebHostEnvironment webHost)
+        {
+            _webHost = webHost;
+        }
         //user apis
 
         [HttpPost,Route("AddUser")]
@@ -29,9 +34,16 @@ namespace ToDoListWebApi.Controllers
         [HttpGet,Route("GetUsers")]
         public async Task<IActionResult> Users([FromQuery] int PageSize = 100) 
         {
-            using (ToDoListDbContext toDoListDbContext = new ToDoListDbContext())
+            try
             {
-                return Ok(await toDoListDbContext.Users.Take(PageSize).ToListAsync());
+                using (ToDoListDbContext toDoListDbContext = new ToDoListDbContext())
+                {
+                    return Ok(await toDoListDbContext.Users.Take(PageSize).ToListAsync());
+                }
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.Message);
             }
         }
         [HttpPut, Route("EditUser")]
