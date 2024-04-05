@@ -39,14 +39,14 @@ namespace ToDoListWebApi.Models
         {
             //sql database
 
-            //    IConfigurationRoot configuration = new ConfigurationBuilder()
-            //.SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
-            //.AddJsonFile("appsettings.json")
-            //.Build();
-            //    optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
+            IConfigurationRoot configuration = new ConfigurationBuilder()
+        .SetBasePath(AppDomain.CurrentDomain.BaseDirectory)
+        .AddJsonFile("appsettings.json")
+        .Build();
+            optionsBuilder.UseSqlServer(configuration.GetConnectionString("DefaultConnection"));
 
             //sqlite database
-            optionsBuilder.UseSqlite($"Data Source={DbPath}");
+            //optionsBuilder.UseSqlite($"Data Source={DbPath}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

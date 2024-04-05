@@ -32,7 +32,7 @@
 @for (var i = 0; i <= Model.Goals.Where(p => p.GoalStatus == 0).Count()/3; i++)
 {
     <div class="row">
-        @foreach (var goal in Model.Goals.Where(p => p.GoalStatus == 0).OrderBy(p => p.FromDate).Skip(i * 3).Take(3))
+        @foreach (var goal in Model.Goals.Where(p => p.GoalStatus == 0).OrderBy(p => p.Title).Skip(i * 3).Take(3))
         {
             <div class="col-xl-4">
                 <div class="card shadow mb-4 d-flex">

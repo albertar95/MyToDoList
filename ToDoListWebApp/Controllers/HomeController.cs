@@ -31,8 +31,8 @@ namespace ToDoListWebApp.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        //private static string BaseAddress = "http://192.168.1.100:8061/api/todolist";//local service
-        private static string BaseAddress = "https://todolistwebapi.albertar95.ir/api/todolist"; // host service
+        private static string BaseAddress = "http://192.168.1.100:8061/api/todolist";//local service
+        //private static string BaseAddress = "https://todolistwebapi.albertar95.ir/api/todolist"; // host service
         public HomeController(ILogger<HomeController> logger)
         {
             _logger = logger;

@@ -152,18 +152,28 @@ namespace ToDoListWebApi.Controllers
             {
                 try
                 {
-                    var Schedules = toDoListDbContext.Schedules.GroupBy(p => p.NidSchedule).Select(q => q.Key).ToList();
+                    var tasks = toDoListDbContext.Tasks.Where(p => p.GoalId == goal.NidGoal).GroupBy(q => q.NidTask).Select(w => w.Key).ToList();
+                    var Schedules = toDoListDbContext.Schedules.Where(w => tasks.Contains(w.TaskId)).GroupBy(p => p.NidSchedule).Select(q => q.Key).ToList();
                     if(toDoListDbContext.Progresses.Where(p => Schedules.Contains(p.ScheduleId)).ToList().OrderBy(p => p.CreateDate).FirstOrDefault() != null)
                     {
-                        var minProgressDate = toDoListDbContext.Progresses.Where(p => Schedules.Contains(p.ScheduleId)).ToList().OrderBy(p => p.CreateDate).FirstOrDefault().CreateDate;
-                        if (goal.FromDate.Date <= minProgressDate.Date)
+                        if(toDoListDbContext.Progresses.Any(p => Schedules.Contains(p.ScheduleId)))
+                        {
+                            var minProgressDate = toDoListDbContext.Progresses.Where(p => Schedules.Contains(p.ScheduleId)).ToList().OrderBy(p => p.CreateDate).FirstOrDefault().CreateDate;
+                            if (goal.FromDate.Date <= minProgressDate.Date)
+                            {
+                                toDoListDbContext.Entry(goal).State = EntityState.Modified;
+                                await toDoListDbContext.SaveChangesAsync();
+                                return Ok();
+                            }
+                            else
+                                return BadRequest();
+                        }
+                        else
                         {
                             toDoListDbContext.Entry(goal).State = EntityState.Modified;
                             await toDoListDbContext.SaveChangesAsync();
                             return Ok();
                         }
-                        else
-                            return BadRequest();
                     }
                     else
                     {
@@ -260,9 +270,13 @@ namespace ToDoListWebApi.Controllers
         [HttpDelete, Route("DeleteTask/{NidTask}")]
         public async Task<IActionResult> DeleteTask([FromRoute] Guid NidTask)
         {
+            Models.Task task = null;
             using (ToDoListDbContext toDoListDbContext = new ToDoListDbContext())
             {
-                var task = toDoListDbContext.Tasks.Where(p => p.NidTask == NidTask).FirstOrDefault();
+                task = toDoListDbContext.Tasks.Where(p => p.NidTask == NidTask).FirstOrDefault();
+            }
+            using (ToDoListDbContext toDoListDbContext = new ToDoListDbContext())
+            {
                 if (task == null)
                 {
                     return BadRequest();
